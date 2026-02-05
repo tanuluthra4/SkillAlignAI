@@ -3,6 +3,7 @@ from backend.jd_analyzer import extract_jd_requirements
 from backend.gemini_client import generate_explanation
 from backend.rejection_report import build_rejection_report
 from backend.contracts import SkillAlignResponse
+from backend.fallback_explainer import generate_fallback_summary
 
 def analyze_application(resume_text: str, job_description_text: str) -> SkillAlignResponse:
     # 1. Parse inputs
@@ -40,10 +41,7 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
         )
     
     except Exception:
-        rejection_summary = (
-            "The resume does not sufficiently align with the job requirements."
-            "Several required skills are missing or underrepresented."
-        )
+        rejection_summary = generate_fallback_summary(rejection_report)
 
     # 6. Improvement suggestions (deterministic)
     improvement_suggestions = [
