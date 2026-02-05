@@ -3,7 +3,7 @@ def extract_resume_info(resume_text):
     skills = []
 
     common_skills = [
-        "python", "java", "c++", "sql", "flask", "node", 
+        "python", "java", "c++", "sql", "flask", "node", "docker",
         "javascript", "html", "css", "machine learning", "data structures"
     ]
 
