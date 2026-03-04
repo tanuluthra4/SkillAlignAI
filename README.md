@@ -149,6 +149,13 @@ Example Response
 - Weak Skills - areas needing improvement 
 - Explanation - human-readable feedback
 
+## 🚀 Live Demo
+
+Frontend: https://skillalignai-1.onrender.com  
+Backend API: https://skillalignai.onrender.com/analyze
+
+> Note: UI is intentionally minimal to focus on backend architecture, deterministic skill matching, and explainable feedback generation.
+
 ## Documentation 
 
 The docs/ folder contains system-level documentation and API specifications:
