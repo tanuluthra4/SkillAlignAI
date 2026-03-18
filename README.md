@@ -61,36 +61,42 @@ The system prioritizes explainability and determinism in skill matching while us
 - Highlights **secondary factors** affecting application success.
 - Provides **clear, professional, and actionable advice** for candidates.
 - Generates explanations in **plain, understandable language**.
+- **Resume PDF Upload:** Upload a resume in PDF format and automatically extract text for analysis.
 
 ## Folder Structure
 
 ```text
 SkillAlignAI/
-|
+│
 ├── backend/
-│ ├── .env
-│ ├── app.py
-| ├── contracts.py
-| ├── fallback_explainer.py
-│ ├── gemini_client.py
-│ ├── jd_analyzer.py
-│ ├── rejection_engine.py
-| ├── rejection_report.py
-│ ├── resume_parser.py
-| └── tests/
-│       └── test_analyze_application.py  
-| 
+│   ├── .env
+│   ├── app.py
+│   ├── contracts.py
+│   ├── fallback_explainer.py
+│   ├── gemini_client.py
+│   ├── jd_analyzer.py
+│   ├── rejection_engine.py
+│   ├── rejection_report.py
+│   ├── resume_parser.py
+│   │
+│   ├── utils/
+│   │   └── pdf_parser.py        # Extracts text from uploaded PDF resumes
+│   │
+│   └── tests/
+│       └── test_analyze_application.py
+│
 ├── frontend/
-│ ├── index.html       
-│ ├── script.js         
-│ └── style.css  
-|            
+│   ├── index.html              # User interface
+│   ├── script.js               # API calls + UI logic
+│   └── style.css               # Basic styling
+│
 ├── docs/
-| ├── api_contract.md       # Structure and API behavior 
-│ ├── problem.md            # Detailed problem analysis 
-│ ├── user_flow.md          # User interaction flow 
-│ └── solution.md           # System design explanation 
-| 
+│   ├── api_contract.md         # API request/response specification
+│   ├── problem.md              # Problem definition
+│   ├── user_flow.md            # User interaction flow
+│   └── solution.md             # System design explanation
+│
+├── Procfile                    # Render deployment configuration
 ├── README.md
 ├── .gitignore
 └── requirements.txt
@@ -148,6 +154,16 @@ Example Response
 - Missing Skills - critical gaps 
 - Weak Skills - areas needing improvement 
 - Explanation - human-readable feedback
+
+### Uploading a Resume PDF
+
+Instead of pasting resume text, you can upload a `.pdf` resume.
+
+The system will:
+1. Extract text from the pdf 
+2. Parse skills from the extracted content
+3. Compare them against the job description 
+4. Generate a match score and feedback
 
 ## 🚀 Live Demo
 

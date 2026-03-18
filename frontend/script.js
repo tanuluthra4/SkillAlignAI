@@ -7,10 +7,24 @@ const BASE_URL =
         : "https://skillalignai.onrender.com";
 
 analyzeBtn.addEventListener("click", async function () {
-    const resumeText = document.getElementById("resume").value;
+    let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
+    const resumeFile = document.getElementById("resumeFile").files[0];
 
     try {
+        if (resumeFile) {
+            const formData = new FormData();
+            formData.append("resume_file", resumeFile);
+
+            const uploadResponse = await fetch(`${BASE_URL}/upload_resume`, {
+                method: "POST",
+                body:formData
+            });
+
+            const uploadData = await uploadResponse.json();
+            resumeText = uploadData.resume_text;
+        }
+        
         const response = await fetch(`${BASE_URL}/analyze`, {
             method: "POST",
             headers: {
