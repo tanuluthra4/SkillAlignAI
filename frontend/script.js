@@ -68,12 +68,27 @@ function displayResult(data) {
             ? data.improvement_suggestions.join(", ")
             : "None";
 
+    let rejectionreportHTML = "";
+
+    if (data.rejection_report && data.rejection_report.length) {
+        rejectionreportHTML = data.rejection_report.map(r => `
+            <li>
+            <strong>${r.reason}</strong> (Severity: ${r.severity})
+            </li>
+            `).join("");
+    }
+
     resultDiv.innerHTML = `
     <h3>Match Percentage: ${data.match_percentage}%</h3>
     <p><strong>Missing Required Skills:</strong> ${missingSKills}</p>
     <p><strong>Missing Preferred Skills:</strong> ${missingPreferred}</p>
     <p><strong>Suggestions:</strong> ${suggestions}</p>
-    <p><strong>Summary:</strong></p>
+    <h4>Screening Report</h4>
+    <ul>
+        ${rejectionreportHTML}
+    </ul>
+
+    <h4>Detailed Explanation</h4>
     <p>${data.rejection_summary}</p>
     `;
 }
