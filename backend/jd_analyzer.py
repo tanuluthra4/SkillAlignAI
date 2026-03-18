@@ -5,7 +5,7 @@ def extract_jd_requirements(jd_text):
     required_skills = []
 
     skill_keywords = [
-        "python", "java", "c++", "sql", "flask", "node", "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "machine learning"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "js", "rest api", "data structures", "algorithms", "docker", "css", "c", "machine learning", "ml", "react.js", "react", "ai", "artificial intelligence"
     ]
 
     for skill in skill_keywords:

@@ -5,7 +5,7 @@ def extract_resume_info(resume_text):
     skills = []
 
     common_skills = [
-        "python", "java", "c++", "sql", "flask", "node", "docker", "c", "javascript", "html", "css", "machine learning", "data structures", "rest api", "algorithms"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "js", "html", "css", "machine learning", "ml", "data structures", "rest api", "algorithms", "react.js", "react", "ai", "artificial intelligence"
     ]
 
     for skill in common_skills:

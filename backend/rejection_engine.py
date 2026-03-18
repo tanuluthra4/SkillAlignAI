@@ -5,14 +5,36 @@ from backend.rejection_report import build_rejection_report
 from backend.contracts import SkillAlignResponse
 from backend.fallback_explainer import generate_fallback_summary
 
+SKILL_NORMALIZATION = {
+    "javascript": "js",
+    "node": "nodejs",
+    "react.js": "react",
+    "machine learning": "ml",
+    "ai": "artificial intelligence",
+    "python": "py"
+}
+
+def normalize_skills(skill_list):
+    normalized = []
+
+    for skill in skill_list:
+        skill = skill.lower().strip()
+
+        if skill in SKILL_NORMALIZATION:
+            skill = SKILL_NORMALIZATION[skill]
+
+        normalized.append(skill)
+
+    return normalized
+
 def analyze_application(resume_text: str, job_description_text: str) -> SkillAlignResponse:
     # 1. Parse inputs
     resume_data = extract_resume_info(resume_text)
     jd_data = extract_jd_requirements(job_description_text)
 
     # 2. Compute skill match percentage 
-    resume_skills = set(resume_data.get("skills", []))
-    required_skills = set(jd_data.get("required_skills", []))
+    resume_skills = set(normalize_skills(resume_data.get("skills", [])))
+    required_skills = set( normalize_skills(jd_data.get("required_skills", [])))
 
     if not required_skills:
         match_percentage = 0
