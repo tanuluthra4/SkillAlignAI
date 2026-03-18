@@ -18,13 +18,13 @@ analyzeBtn.addEventListener("click", async function () {
 
             const uploadResponse = await fetch(`${BASE_URL}/upload_resume`, {
                 method: "POST",
-                body:formData
+                body: formData
             });
 
             const uploadData = await uploadResponse.json();
             resumeText = uploadData.resume_text;
         }
-        
+
         const response = await fetch(`${BASE_URL}/analyze`, {
             method: "POST",
             headers: {
@@ -53,10 +53,26 @@ analyzeBtn.addEventListener("click", async function () {
 function displayResult(data) {
     const resultDiv = document.getElementById("result");
 
+    const missingSKills =
+        data.missing_skills && data.missing_skills.length
+            ? data.missing_skills.join(", ")
+            : "None";
+
+    const missingPreferred =
+        data.missing_preferred_skills && data.missing_preferred_skills.length
+            ? data.missing_preferred_skills.join(", ")
+            : "None";
+
+    const suggestions =
+        data.improvement_suggestions && data.improvement_suggestions.length
+            ? data.improvement_suggestions.join(", ")
+            : "None";
+
     resultDiv.innerHTML = `
     <h3>Match Percentage: ${data.match_percentage}%</h3>
-    <p><strong>Missing Skills:</strong> ${data.missing_skills.join(", ")}</p>
-    <p><strong>Suggestions:</strong> ${data.improvement_suggestions.join(", ")}</p>
+    <p><strong>Missing Required Skills:</strong> ${missingSKills}</p>
+    <p><strong>Missing Preferred Skills:</strong> ${missingPreferred}</p>
+    <p><strong>Suggestions:</strong> ${suggestions}</p>
     <p><strong>Summary:</strong></p>
     <p>${data.rejection_summary}</p>
     `;
