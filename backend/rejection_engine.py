@@ -35,6 +35,7 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
     # 2. Compute skill match percentage 
     resume_skills = set(normalize_skills(resume_data.get("skills", [])))
     required_skills = set( normalize_skills(jd_data.get("required_skills", [])))
+    preferred_skills = set(normalize_skills(jd_data.get("preferred_skills", [])))
 
     if not required_skills:
         match_percentage = 0
@@ -45,6 +46,7 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
 
     # 3. Derive structured fields 
     missing_skills = list(required_skills - resume_skills)
+    missing_preferred_skills = list(preferred_skills - resume_skills)
     weak_skills = [] # can evolve later 
 
     # 4. Rule based rejection report
@@ -71,9 +73,15 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
         for skill in missing_skills
     ]
 
+    improvement_suggestions += [
+        f"Learning {skill} could improve competitiveness for this role."
+        for skill in missing_preferred_skills
+    ]
+
     return {
         "match_percentage": match_percentage,
         "missing_skills": missing_skills,
+        "missing_preferred_skills": missing_preferred_skills,
         "weak_skills": weak_skills,
         "rejection_report": rejection_report,
         "rejection_summary": rejection_summary,
