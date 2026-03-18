@@ -57,6 +57,10 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
     ) 
 
     # 5. Generate explanation text (AI-assisted)
+    resume_data["skills"] = list(resume_skills)
+    jd_data["required_skills"] = list(required_skills)
+    jd_data["preferred_skills"] = list(preferred_skills)
+    
     try:
         rejection_summary = generate_explanation(
             resume_data, 
