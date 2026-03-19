@@ -89,6 +89,8 @@ function displayResult(data) {
     </ul>
 
     <h4>Detailed Explanation</h4>
-    <p>${data.rejection_summary}</p>
+    <div style="max-height:400px; overflow-y:auto; border:1px solid #ccc; padding:10px; white-space:pre-wrap;">
+        ${data.rejection_summary}
+    </div>
     `;
 }
