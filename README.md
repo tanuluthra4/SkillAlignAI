@@ -1,10 +1,10 @@
 # SkillAlignAI
 
-Explainable resume–job description alignment engine that generates structured rejection feedback via a REST API
+Explainable ATS-style resume analysis system that evaluates candidate-job alignment using weighted skill matching and generates structured, actionable rejection feedback via a REST API. 
 
 ## Problem Statement 
 
-Job applicants often receive rejection emails without any explanation of which skills caused the rejection. Recruiter feedback is usually unavailable or generic, making it difficult for candidates to understand gaps in their resumes and improve future applications. This project addresses the lack of structured, explanable feedback for resume-job description mismatches. 
+Job applicants often receive rejection emails without any explanation of which skills caused the rejection. Recruiter feedback is usually unavailable or generic, making it difficult for candidates to understand gaps in their resumes and improve future applications. This project addresses the lack of structured, explainable feedback for resume-job description mismatches. 
 
 ## What This Project Does (System Output)
 
@@ -12,7 +12,7 @@ Job applicants often receive rejection emails without any explanation of which s
 - Extracts relevant technical and role-specific skills from both inputs   
 - Computes a skill match percentage based on skill overlap  
 - Identifies missing and weak skills required by the job description  
-Generates a structured, human-readable rejection explanation with actionable improvement suggestions    
+- Generates a structured, human-readable rejection explanation with actionable improvement suggestions    
 
 ## What This Project Does Not DO 
 
@@ -55,6 +55,16 @@ SkillAlignAI is designed to explain why a job application may be rejected based 
 
 The system prioritizes explainability and determinism in skill matching while using AI-assisted language generation only for explanation clarity. 
 
+## Key Highlights 
+
+- Implemented weighted ATS-style scoring system (required vs preferred skills)
+- Added score breakdown (required match %, preferred match %, final score)
+- Built token-based skill extraction to eliminate false positives (e.g., Java vs JavaScript)
+- Designed explainable evaluation using structured rejection reports 
+- Integrated PDF resume parsing with automatic skill extraction
+- Developed REST API backend with AI-assisted explanation generation 
+- Deployed full-stack application (Render + static frontend)
+
 ## Features
 
 - Detects **missing required skills** and assigns severity levels.
@@ -62,6 +72,16 @@ The system prioritizes explainability and determinism in skill matching while us
 - Provides **clear, professional, and actionable advice** for candidates.
 - Generates explanations in **plain, understandable language**.
 - **Resume PDF Upload:** Upload a resume in PDF format and automatically extract text for analysis.
+
+## Why This Project Matters 
+
+Most job application systems provide little to no feedback after rejection. SkillAlignAI bridges this gap by:
+
+- Explaining why a candidate may be rejected 
+- Providing actionable improvement insights
+- Simulating how ATS systems evaluate resumes 
+
+This makes the system useful not only as a tool, but also as a learning aid for job seekers.
 
 ## Folder Structure
 
@@ -112,6 +132,24 @@ pip install -r requirements.txt
 
 Create a .env file inside backend/ and configure required API keys.
 
+## How it Works
+
+1. Extract skills from resume and job description 
+2. Normalize and categorize skills (required vs preferred)
+3. Compute weighted match score 
+4. Generate structured rejection report 
+5. Produce human-readable explanation using AI 
+
+## Example Evaluation Output 
+
+The system provides transparent scoring: 
+
+- Required Match: 50%
+- Preferred Match: 0%
+- Final Score: 40% 
+
+This helps users understand not just the result, but *why* the result occurred.
+
 ## Usage 
 
 ### Running Locally 
@@ -139,9 +177,18 @@ Example Response
 ```json
 {
   "match_percentage": 68,
-  "missing_skills": ["Docker", "AWS"],
-  "weak_skills": ["System Design"],
-  "explanation": "Your resume demonstrates strong alignment with the role, but lacks experience in Docker and AWS. System Design is mentioned but needs more depth."
+  "required_match_percentage": 75,
+  "preferred_match_percentage": 50,
+  "missing_skills": ["docker"],
+  "missing_preferred_skills": ["aws"],
+  "rejection_report": [
+    {
+      "reason": "Missing required skills",
+      "severity": "High",
+      "details": ["docker"]
+    }
+  ],
+  "rejection_summary": "..."
 }
 ```
 
@@ -200,9 +247,8 @@ git push origin feature-name
 
 ## Roadmap 
 
-- Deploy backend (Render/Railway)
-- Deploy frontend (Vercel)
-- Add authentication layer 
-- Add resume file upload (PDF parsing)
-- Add skill weighting system 
+- Add skill ontology / synonym expansion 
+- Improve semantic skill extraction 
 - Add dashboard with match analytics 
+- Add authentication layer 
+- Enhance UI for better user experience 
