@@ -80,6 +80,8 @@ function displayResult(data) {
 
     resultDiv.innerHTML = `
     <h3>Match Percentage: ${data.match_percentage}%</h3>
+    <p><strong>Required Match:</strong> ${data.required_match_percentage}%</p>
+    <p><strong>Preferred Match:</strong> ${data.preferred_match_percentage}%</p>
     <p><strong>Missing Required Skills:</strong> ${missingSKills}</p>
     <p><strong>Missing Preferred Skills:</strong> ${missingPreferred}</p>
     <p><strong>Suggestions:</strong> ${suggestions}</p>

@@ -50,6 +50,8 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
 
     match_score = (REQUIRED_WEIGHT * required_match) + (PREFERRED_WEIGHt * preferred_match)
 
+    required_match_percentage = int(required_match * 100)
+    preferred_match_percentage = int(preferred_match * 100)
     match_percentage = int(match_score * 100)
 
     # 3. Derive structured fields 
@@ -93,6 +95,8 @@ def analyze_application(resume_text: str, job_description_text: str) -> SkillAli
 
     return {
         "match_percentage": match_percentage,
+        "required_match_percentage": required_match_percentage,
+        "preferred_match_percentage": preferred_match_percentage,
         "missing_skills": missing_skills,
         "missing_preferred_skills": missing_preferred_skills,
         "weak_skills": weak_skills,
