@@ -1,4 +1,4 @@
-def build_rejection_report(match_percentage, missing_skills, weak_skills):
+def build_rejection_report(match_percentage, missing_skills, missing_preferred_skills, weak_skills):
     reasons = []
 
     if missing_skills:
@@ -20,6 +20,13 @@ def build_rejection_report(match_percentage, missing_skills, weak_skills):
             "reason": "Weak skill coverage", 
             "severity": "Medium", 
             "details": weak_skills
+        })
+
+    if missing_preferred_skills:
+        reasons.append({
+            "reason": "Missing Preferred Skills",
+            "severity": "Medium",
+            "details": missing_preferred_skills
         })
 
     if not reasons:

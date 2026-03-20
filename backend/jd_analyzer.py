@@ -17,9 +17,10 @@ def extract_jd_requirements(jd_text):
 
     for marker in preferred_markers:
         if marker in jd_text:
-            parts = jd_text.split(marker, 1)
-            required_section = parts[0]
-            preferred_section = parts[1]
+            parts = re.split(rf"{marker}\s*:", jd_text, maxsplit=1)
+            if len(parts) == 2:
+                required_section = parts[0]
+                preferred_section = parts[1]
             break
 
     # Detect required skills 
