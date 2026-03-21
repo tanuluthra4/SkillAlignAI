@@ -4,7 +4,7 @@ def run_pipeline(resume_text, jd_text):
     audit_trail = []
 
     try:
-        audit_trail.append("Step 1: Processing input")
+        audit_trail.append("[Input Agent] Processing input")
         if not resume_text.strip():
             audit_trail.append("Resume is empty")
             return {
@@ -13,25 +13,25 @@ def run_pipeline(resume_text, jd_text):
                 "audit_trail": audit_trail
             }
 
-        audit_trail.append("Step 2: Analyzing JD")
+        audit_trail.append("[JD Analysis Agent] Analyzing JD")
         if not jd_text.strip():
-            audit_trail.append("Recovery: Empty JD -> using fallback")
+            audit_trail.append("[Recovery Agent] Empty JD detected")
 
             if resume_text.strip():
                 jd_text = resume_text
-                audit_trail.append("Fallback applied: Using resume as JD")
+                audit_trail.append("[Recovery Agent] Fallback applied: Using resume as JD")
             else:
-                audit_trail.append("Failure: Both inputs empty")
+                audit_trail.append("[Recovery Agent] Failure: Both inputs empty")
                 return {
                     "error": "Both resume and job description are empty.",
                     "decision": "Failed",
                     "audit_trail": audit_trail
                 }
 
-        audit_trail.append("Step 3: Matching Skills")
+        audit_trail.append("[Matching Agent] Matching Skills")
         result = analyze_application(resume_text, jd_text)
 
-        audit_trail.append("Step 4: Decision Making")
+        audit_trail.append("[Decision Agent] Decision Making")
         if result["match_percentage"] > 70:
             decision = "Strong Fit"
         elif result["match_percentage"] > 40:
@@ -39,9 +39,9 @@ def run_pipeline(resume_text, jd_text):
         else:
             decision = "Reject"
 
-        audit_trail.append(f"Decision: {decision}")
+        audit_trail.append(f"[Decision Agent] Decision: {decision}")
 
-        audit_trail.append("Step 5: Generating Explanation")
+        audit_trail.append("[Explanation Agent] Generating Explanation")
         result["decision"] = decision
         result["audit_trail"] = audit_trail
 
