@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from backend.rejection_engine import analyze_application
 from backend.utils.pdf_parser import extract_text_from_pdf
+from backend.agent_controller import run_pipeline
 
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +19,7 @@ def analyze():
         }), 400
 
     try: 
-        result = analyze_application(resume_text, job_description_text)
+        result = run_pipeline(resume_text, job_description_text)
         return jsonify(result), 200
     
     except Exception:

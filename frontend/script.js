@@ -79,7 +79,8 @@ function displayResult(data) {
     }
 
     resultDiv.innerHTML = `
-    <h3>Match Percentage: ${data.match_percentage}%</h3>
+    <h3>Decision: ${data.decision}</h3>
+    <h3>Final Match Score: ${data.match_percentage}%</h3>
     <p><strong>Required Match:</strong> ${data.required_match_percentage}%</p>
     <p><strong>Preferred Match:</strong> ${data.preferred_match_percentage}%</p>
     <p><strong>Missing Required Skills:</strong> ${missingSKills}</p>
