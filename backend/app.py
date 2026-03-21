@@ -13,19 +13,15 @@ def analyze():
     resume_text = data.get("resume_text")
     job_description_text = data.get("job_description_text")
 
-    if not resume_text or not job_description_text:
-        return jsonify({
-            "error": "resume and job_description_text must not be empty"
-        }), 400
+    resume_text = resume_text or ""
+    job_description_text = job_description_text or ""
 
-    try: 
-        result = run_pipeline(resume_text, job_description_text)
-        return jsonify(result), 200
+    result = run_pipeline(resume_text, job_description_text)
+
+    if result.get("decision") == "Failed":
+        return jsonify(result), 400
     
-    except Exception:
-        return jsonify({
-            "error": "An internal error occurred while analyzing the application."
-        }), 500
+    return jsonify(result), 200
     
 @app.route("/upload_resume", methods=["POST"])
 def upload_resume():

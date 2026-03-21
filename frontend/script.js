@@ -7,9 +7,11 @@ const BASE_URL =
         : "https://skillalignai.onrender.com";
 
 analyzeBtn.addEventListener("click", async function () {
+    const resultDiv = document.getElementById("result");
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
     const resumeFile = document.getElementById("resumeFile").files[0];
+    resultDiv.innerHTML = "Analyzing.... "
 
     try {
         if (resumeFile) {
@@ -36,21 +38,27 @@ analyzeBtn.addEventListener("click", async function () {
             })
         });
 
-        if (!response.ok) {
-            throw new Error("Server error");
-        }
-
         const data = await response.json();
+        if (!response.ok) {
+            resultDiv.innerHTML = `<p>${data.error || "something went wrong"}</p>`;
+            return;
+        }
 
         displayResult(data);
 
     } catch (error) {
-        console.error("Error:", error);
+        resultDiv.innerHTML = "Unable to connect to server";
+        return;
     }
 
 });
 
 function displayResult(data) {
+    if (data.error) {
+        resultDiv.innerHTML = `<p>${data.error}</p>`;
+        return;
+    }
+
     const resultDiv = document.getElementById("result");
 
     const missingSKills =
