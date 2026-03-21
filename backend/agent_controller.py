@@ -1,27 +1,37 @@
-from backend.resume_parser import extract_resume_info
-from backend.jd_analyzer import extract_jd_requirements
 from backend.rejection_engine import analyze_application
 
 def run_pipeline(resume_text, jd_text):
+    audit_trail = []
+
     try:
-        print("Step 1: Processing input")
+        audit_trail.append("Step 1: Processing input")
         if not resume_text.strip():
+            audit_trail.append("Resume is empty")
             return {
                 "error": "Resume is empty. Please provide valid input.",
-                "decision": "Failed"
+                "decision": "Failed",
+                "audit_trail": audit_trail
             }
-        resume_data = extract_resume_info(resume_text)
 
-        print("Step 2: Analyzing JD")
+        audit_trail.append("Step 2: Analyzing JD")
         if not jd_text.strip():
-            print("Recovery: Empty JD -> using fallback")
-            jd_text = resume_text
-        jd_data = extract_jd_requirements(jd_text)
+            audit_trail.append("Recovery: Empty JD -> using fallback")
 
-        print("Step 3: Matching Skills")
+            if resume_text.strip():
+                jd_text = resume_text
+                audit_trail.append("Fallback applied: Using resume as JD")
+            else:
+                audit_trail.append("Failure: Both inputs empty")
+                return {
+                    "error": "Both resume and job description are empty.",
+                    "decision": "Failed",
+                    "audit_trail": audit_trail
+                }
+
+        audit_trail.append("Step 3: Matching Skills")
         result = analyze_application(resume_text, jd_text)
 
-        print("Step 4: Decision Making")
+        audit_trail.append("Step 4: Decision Making")
         if result["match_percentage"] > 70:
             decision = "Strong Fit"
         elif result["match_percentage"] > 40:
@@ -29,13 +39,16 @@ def run_pipeline(resume_text, jd_text):
         else:
             decision = "Reject"
 
-        print("Step 5: Generating Explanation")
+        audit_trail.append(f"Decision: {decision}")
+
+        audit_trail.append("Step 5: Generating Explanation")
         result["decision"] = decision
+        result["audit_trail"] = audit_trail
 
         return result 
     
     except Exception as e:
-        print("Recovery: System error detected -> fallback response")
+        audit_trail.append("Recovery: System error detected -> fallback response")
 
         return {
             "match_percentage": 0,
@@ -46,5 +59,6 @@ def run_pipeline(resume_text, jd_text):
             "rejection_report": [],
             "rejection_summary": "System encountered an issue but recovered safely.",
             "improvement_suggestions": [],
-            "decision": "Failed"
+            "decision": "Failed", 
+            "audit_trail": audit_trail
         }

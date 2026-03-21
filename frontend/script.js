@@ -40,14 +40,24 @@ analyzeBtn.addEventListener("click", async function () {
 
         const data = await response.json();
         if (!response.ok) {
-            resultDiv.innerHTML = `<p>${data.error || "something went wrong"}</p>`;
+            resultDiv.innerHTML = `<p>${data.error || "something went wrong"}</p>
+            <h4>Agent Execution Trace</h4>
+            <ul> 
+                ${data.audit_trail}
+            </ul>
+            `;
             return;
         }
 
         displayResult(data);
 
     } catch (error) {
-        resultDiv.innerHTML = "Unable to connect to server";
+        resultDiv.innerHTML = `Unable to connect to server;
+        <h4>Agent Execution Trace</h4>
+        <ul> 
+            ${data.audit_trail}
+        </ul>
+        `;
         return;
     }
 
@@ -86,6 +96,12 @@ function displayResult(data) {
             `).join("");
     }
 
+    let audit_trail = "";
+
+    if (data.audit_trail && data.audit_trail.length) {
+        auditHTML = data.audit_trail.map(step => `<li>${step}</li>`).join("");
+    }
+
     resultDiv.innerHTML = `
     <h3>Decision: ${data.decision}</h3>
     <h3>Final Match Score: ${data.match_percentage}%</h3>
@@ -103,5 +119,10 @@ function displayResult(data) {
     <div style="max-height:400px; overflow-y:auto; border:1px solid #ccc; padding:10px; white-space:pre-wrap;">
         ${data.rejection_summary}
     </div>
+
+    <h4>Agent Execution Trace</h4>
+    <ul> 
+        ${auditHTML}
+    </ul>
     `;
 }
