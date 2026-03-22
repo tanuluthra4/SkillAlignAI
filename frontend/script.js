@@ -11,7 +11,13 @@ analyzeBtn.addEventListener("click", async function () {
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
     const resumeFile = document.getElementById("resumeFile").files[0];
-    resultDiv.innerHTML = "Analyzing.... "
+
+    document.getElementById("reportList").innerHTML = "";
+    document.getElementById("explanation").textContent = "";
+    document.getElementById("auditTrail").innerHTML = "";
+    document.getElementById("result").style.opacity = "0.2";
+    document.getElementById("loaderOverlay").classList.remove("hidden");
+    document.getElementById("decisionBox").textContent = "Analyzing... ";
 
     try {
         if (resumeFile) {
@@ -40,89 +46,102 @@ analyzeBtn.addEventListener("click", async function () {
 
         const data = await response.json();
         if (!response.ok) {
-            resultDiv.innerHTML = `<p>${data.error || "something went wrong"}</p>
-            <h4>Agent Execution Trace</h4>
-            <ul> 
-                ${data.audit_trail}
-            </ul>
-            `;
+            document.getElementById("loaderOverlay").classList.add("hidden");
+            document.getElementById("result").style.opacity = "1";
+            document.getElementById("decisionBox").textContent = data.error || "Something went wrong";
+
+            document.getElementById("decisionBox").className = "card decision-box decision-reject";
+
+            const auditTrail = document.getElementById("auditTrail");
+            auditTrail.innerHTML = "";
+
+            (data.audit_trail || []).forEach(step => {
+                const li = document.createElement("li");
+                li.textContent = step;
+                auditTrail.appendChild(li);
+            });
+
             return;
         }
 
+        document.getElementById("loaderOverlay").classList.add("hidden");
+        document.getElementById("result").style.opacity = "1";
         displayResult(data);
 
     } catch (error) {
-        resultDiv.innerHTML = `Unable to connect to server;
-        <h4>Agent Execution Trace</h4>
-        <ul> 
-            ${data.audit_trail}
-        </ul>
-        `;
+        document.getElementById("loaderOverlay").classList.add("hidden");
+        document.getElementById("result").style.opacity = "1";
+        const decisionBox = document.getElementById("decisionBox");
+
+        decisionBox.textContent = "Unable to connect to server";
+        decisionBox.className = "card decision-box decision-reject";
+
         return;
     }
 
 });
 
 function displayResult(data) {
-    if (data.error) {
-        resultDiv.innerHTML = `<p>${data.error}</p>`;
-        return;
+    const decisionBox = document.getElementById("decisionBox");
+    const requiredScore = document.getElementById("requiredScore");
+    const preferredScore = document.getElementById("preferredScore");
+    const finalScore = document.getElementById("finalScore");
+
+    const missingRequired = document.getElementById("missingRequired");
+    const missingPreferred = document.getElementById("missingPreferred");
+
+    const suggestions = document.getElementById("suggestions");
+    const reportList = document.getElementById("reportList");
+    const explanation = document.getElementById("explanation");
+    const auditTrail = document.getElementById("auditTrail");
+
+    // Decision 
+    decisionBox.className = "card decision-box";
+
+    if (data.decision === "Strong Fit") {
+        decisionBox.classList.add("decision-strong");
+    }
+    else if (data.decision === "Borderline") {
+        decisionBox.classList.add("decision-borderline");
+    }
+    else {
+        decisionBox.classList.add("decision-reject");
     }
 
-    const resultDiv = document.getElementById("result");
+    decisionBox.textContent = data.decision;
 
-    const missingSKills =
-        data.missing_skills && data.missing_skills.length
-            ? data.missing_skills.join(", ")
-            : "None";
+    // Scores
+    requiredScore.textContent = data.required_match_percentage + "%";
+    preferredScore.textContent = data.preferred_match_percentage + "%";
+    finalScore.textContent = data.match_percentage + "%";
 
-    const missingPreferred =
-        data.missing_preferred_skills && data.missing_preferred_skills.length
-            ? data.missing_preferred_skills.join(", ")
-            : "None";
+    // Missing Skills 
+    missingRequired.textContent = data.missing_skills?.length ? data.missing_skills.join(", ") : "None";
 
-    const suggestions =
-        data.improvement_suggestions && data.improvement_suggestions.length
-            ? data.improvement_suggestions.join(", ")
-            : "None";
+    missingPreferred.textContent = data.missing_preferred_skills?.length ? data.missing_preferred_skills.join(", ") : "None";
 
-    let rejectionreportHTML = "";
-
+    // Report 
+    reportList.innerHTML = "";
     if (data.rejection_report && data.rejection_report.length) {
-        rejectionreportHTML = data.rejection_report.map(r => `
-            <li>
-            <strong>${r.reason}</strong> (Severity: ${r.severity})
-            </li>
-            `).join("");
+        data.rejection_report.forEach(r => {
+            const li = document.createElement("li");
+            li.textContent = `${r.reason} (Severity: ${r.severity})`;
+            reportList.appendChild(li);
+        });
     }
 
-    let audit_trail = "";
+    suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
 
+    // Explantion 
+    explanation.textContent = data.rejection_summary;
+
+    // Audit Trail 
+    auditTrail.innerHTML = ""
     if (data.audit_trail && data.audit_trail.length) {
-        auditHTML = data.audit_trail.map(step => `<li>${step}</li>`).join("");
+        data.audit_trail.forEach(step => {
+            const li = document.createElement("li");
+            li.textContent = step;
+            auditTrail.appendChild(li);
+        });
     }
-
-    resultDiv.innerHTML = `
-    <h3>Decision: ${data.decision}</h3>
-    <h3>Final Match Score: ${data.match_percentage}%</h3>
-    <p><strong>Required Match:</strong> ${data.required_match_percentage}%</p>
-    <p><strong>Preferred Match:</strong> ${data.preferred_match_percentage}%</p>
-    <p><strong>Missing Required Skills:</strong> ${missingSKills}</p>
-    <p><strong>Missing Preferred Skills:</strong> ${missingPreferred}</p>
-    <p><strong>Suggestions:</strong> ${suggestions}</p>
-    <h4>Screening Report</h4>
-    <ul>
-        ${rejectionreportHTML}
-    </ul>
-
-    <h4>Detailed Explanation</h4>
-    <div style="max-height:400px; overflow-y:auto; border:1px solid #ccc; padding:10px; white-space:pre-wrap;">
-        ${data.rejection_summary}
-    </div>
-
-    <h4>Agent Execution Trace</h4>
-    <ul> 
-        ${auditHTML}
-    </ul>
-    `;
 }

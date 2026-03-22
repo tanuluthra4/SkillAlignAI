@@ -14,7 +14,50 @@
     <input type="file" id="resumeFile" accept=".pdf">
     <textarea id="job" placeholder="Paste job description here"></textarea>
     <button id="analyzeBtn">Analyze</button>
-    <div id="result"></div>
+
+    <div id="result" class="result-container">
+
+        <div id="decisionBox" class="card decision-box"></div>
+
+        <div class="card">
+            <h3>Score Breakdown</h3>
+            <p>Required Match: <span id="requiredScore"></span></p>
+            <p>Preferred Match: <span id="preferredScore"></span></p>
+            <p>Final Match: <span id="finalScore"></span></p>
+        </div>
+
+        <div class="card">
+            <h3>Skill Gaps</h3>
+            <p><strong>Missing Required:</strong> <span id="missingRequired"></span></p>
+            <p><strong>Missing Preferred:</strong> <span id="missingPreferred"></span></p>
+        </div>
+
+        <div class="card">
+            <h3>Suggestions</h3>
+            <p id="suggestions"></p>
+        </div>
+
+        <div class="card">
+            <h3>Screening Report</h3>
+            <ul id="reportList"></ul>
+        </div>
+
+        <div class="card scroll-box">
+            <h3>Detailed Explanation</h3>
+            <div id="explanation"></div>
+        </div>
+
+        <div class="card scroll-box">
+            <h3>Agent Execution Trace</h3>
+            <ul id="auditTrail"></ul>
+        </div>
+
+        <div id="loaderOverlay" class="loader-overlay hidden">
+            <div class="loader-text">Analyzing...</div>
+        </div>
+        
+    </div>
+
     <script src="script.js"></script>
 </body>
 
