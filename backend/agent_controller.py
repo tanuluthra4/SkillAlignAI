@@ -1,64 +1,79 @@
-from backend.rejection_engine import analyze_application
+from backend.agents import (
+    resume_agent, 
+    jd_agent,
+    scoring_agent,
+    decision_agent,
+    explanation_agent
+)
 
 def run_pipeline(resume_text, jd_text):
-    audit_trail = []
+    agent_trace = []
 
     try:
-        audit_trail.append("[Input Agent] Processing input")
-        if not resume_text.strip():
-            audit_trail.append("Resume is empty")
+        # 1. Resume Agent 
+        resume_data = resume_agent(resume_text)
+        agent_trace.append({
+            "agent": "ResumeAgent",
+            "output": resume_data
+        })
+
+        if "error" in resume_data:
             return {
-                "error": "Resume is empty. Please provide valid input.",
                 "decision": "Failed",
-                "audit_trail": audit_trail
+                "error": resume_data["error"],
+                "agent_trace": agent_trace
             }
+        
+        # 2. JD Agent 
+        jd_data = jd_agent(jd_text, resume_text)
+        agent_trace.append({
+            "agent": "JDAgent",
+            "output": jd_data
+        })
 
-        audit_trail.append("[JD Analysis Agent] Analyzing JD")
-        if not jd_text.strip():
-            audit_trail.append("[Recovery Agent] Empty JD detected")
+        # 3. Scoring Agent 
+        score_data = scoring_agent(resume_data, jd_data)
+        agent_trace.append({
+            "agent": "ScoringAgent",
+            "output": score_data
+        })
 
-            if resume_text.strip():
-                jd_text = resume_text
-                audit_trail.append("[Recovery Agent] Fallback applied: Using resume as JD")
-            else:
-                audit_trail.append("[Recovery Agent] Failure: Both inputs empty")
-                return {
-                    "error": "Both resume and job description are empty.",
-                    "decision": "Failed",
-                    "audit_trail": audit_trail
-                }
+        # 4. Decision Agent 
+        decision_data = decision_agent(score_data)
+        agent_trace.append({
+            "agent": "DecisionAgent",
+            "output": decision_data
+        })
 
-        audit_trail.append("[Matching Agent] Matching Skills")
-        result = analyze_application(resume_text, jd_text)
+        # 5. Explanation Agent 
+        explanation_data = explanation_agent(score_data, decision_data)
+        agent_trace.append({
+            "agent": "ExplanationAgent",
+            "output": explanation_data
+        })
 
-        audit_trail.append("[Decision Agent] Decision Making")
-        if result["match_percentage"] > 70:
-            decision = "Strong Fit"
-        elif result["match_percentage"] > 40:
-            decision = "Borderline"
-        else:
-            decision = "Reject"
+        # Final Response 
+        return {
+            "decision": decision_data["decision"],
 
-        audit_trail.append(f"[Decision Agent] Decision: {decision}")
+            "match_percentage": score_data.get("match_score", 0),
+            "required_match_percentage": score_data.get("required_match", 0),
+            "preferred_match_percentage": score_data.get("preferred_match", 0),
 
-        audit_trail.append("[Explanation Agent] Generating Explanation")
-        result["decision"] = decision
-        result["audit_trail"] = audit_trail
+            "matched_skills": score_data.get("matched_skills", []),
+            "missing_skills": score_data.get("missing_skills", []),
+            "missing_preferred_skills": score_data.get("missing_preferred_skills", []),
 
-        return result 
+            "rejection_summary": explanation_data.get("summary", ""),
+            "rejection_report": explanation_data.get("rejection_report", []),
+            "improvement_suggestions": explanation_data.get("improvement_suggestions", []),
+
+            "agent_trace": agent_trace
+        }
     
     except Exception as e:
-        audit_trail.append("Recovery: System error detected -> fallback response")
-
         return {
-            "match_percentage": 0,
-            "required_match_percentage": 0, 
-            "preferred_match_percentage": 0,
-            "missing_skills": [],
-            "missing_preferred_skills": [],
-            "rejection_report": [],
-            "rejection_summary": "System encountered an issue but recovered safely.",
-            "improvement_suggestions": [],
-            "decision": "Failed", 
-            "audit_trail": audit_trail
+            "decision": "Failed",
+            "error": str(e),
+            "agent_trace": agent_trace
         }

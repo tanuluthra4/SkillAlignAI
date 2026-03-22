@@ -45,6 +45,7 @@ analyzeBtn.addEventListener("click", async function () {
         });
 
         const data = await response.json();
+        console.log("FULL RESPONSE:", data);
         if (!response.ok) {
             document.getElementById("loaderOverlay").classList.add("hidden");
             document.getElementById("result").style.opacity = "1";
@@ -95,6 +96,10 @@ function displayResult(data) {
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
 
+    data.matched_skills = data.matched_skills || [];
+    data.missing_skills = data.missing_skills || [];
+    data.missing_preferred_skills = data.missing_preferred_skills || [];
+
     // Decision 
     decisionBox.className = "card decision-box";
 
@@ -111,9 +116,9 @@ function displayResult(data) {
     decisionBox.textContent = data.decision;
 
     // Scores
-    requiredScore.textContent = data.required_match_percentage + "%";
-    preferredScore.textContent = data.preferred_match_percentage + "%";
-    finalScore.textContent = data.match_percentage + "%";
+    requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
+    preferredScore.textContent = (data.preferred_match_percentage ?? 0) + "%";
+    finalScore.textContent = (data.match_percentage ?? data.match_score ?? 0) + "%";
 
     // Missing Skills 
     missingRequired.textContent = data.missing_skills?.length ? data.missing_skills.join(", ") : "None";
@@ -133,11 +138,20 @@ function displayResult(data) {
     suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
 
     // Explantion 
-    explanation.textContent = data.rejection_summary;
+    explanation.textContent = data.explanation || data.rejection_summary || "No explanation available";
 
     // Audit Trail 
-    auditTrail.innerHTML = ""
-    if (data.audit_trail && data.audit_trail.length) {
+    auditTrail.innerHTML = "";
+
+    if (data.agent_trace && data.agent_trace.length) {
+        data.agent_trace.forEach(step => {
+            const li = document.createElement("li");
+            li.textContent = `${step.agent} -> executed`;
+            auditTrail.appendChild(li);
+            console.log(step.output)
+        });
+    }
+    else if (data.audit_trail) {
         data.audit_trail.forEach(step => {
             const li = document.createElement("li");
             li.textContent = step;
