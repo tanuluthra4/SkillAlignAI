@@ -20,10 +20,6 @@ def resume_agent(resume_text):
     }
 
 def jd_agent(jd_text, resume_text):
-    if not jd_text.lower().strip():
-        #fallback logic 
-        jd_text = resume_text
-
     analyzed = extract_jd_requirements(jd_text)
 
     return {
@@ -81,4 +77,40 @@ def explanation_agent(score_data, decision_data):
         "improvement_suggestions": rejection_data["improvement_suggestions"],
         "failure_analysis": rejection_data["failure_analysis"],
         "impact_metrics": rejection_data["impact_metrics"]
+    }
+
+def validation_agent(resume_data, jd_data):
+    issues = []
+
+    if not resume_data.get("skills"):
+        issues.append("No skills found in resume")
+    
+    if not jd_data.get("required_skills"):
+        issues.append("No required skills found in JD")
+
+    return {
+        "is_valid": len(issues) == 0,
+        "issues": issues
+    }
+
+def recovery_agent(resume_data, jd_data, validation_result):
+    issues = validation_result.get("issues", [])
+    actions = []
+
+    # Case 1: JD missing skills 
+    if "No required skills found in JD" in issues:
+        if resume_data.get("skills"):
+            jd_data["required_skills"] = resume_data["skills"]
+            actions.append("Filled JD required_skills from resume")
+
+    # Case 2: Resume missing skills 
+    if "No skills found in resume" in issues:
+        resume_data["skills"] = []
+        actions.append("Initialized empty resume skills")
+
+    return {
+        "resume_data": resume_data,
+        "jd_data": jd_data,
+        "recovered": True,
+        "actions": actions
     }

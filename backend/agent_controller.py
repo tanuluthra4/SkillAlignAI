@@ -3,7 +3,9 @@ from backend.agents import (
     jd_agent,
     scoring_agent,
     decision_agent,
-    explanation_agent
+    explanation_agent,
+    validation_agent,
+    recovery_agent
 )
 
 def run_pipeline(resume_text, jd_text):
@@ -16,13 +18,6 @@ def run_pipeline(resume_text, jd_text):
             "agent": "ResumeAgent",
             "output": resume_data
         })
-
-        if "error" in resume_data:
-            return {
-                "decision": "Failed",
-                "error": resume_data["error"],
-                "agent_trace": agent_trace
-            }
         
         # 2. JD Agent 
         jd_data = jd_agent(jd_text, resume_text)
@@ -31,21 +26,46 @@ def run_pipeline(resume_text, jd_text):
             "output": jd_data
         })
 
-        # 3. Scoring Agent 
+        # 3. Validation Agent
+        validation = validation_agent(resume_data, jd_data)
+        agent_trace.append({
+            "agent": "ValidationAgent",
+            "output": validation
+        })
+
+        # 4. Conditional Recovery 
+        if not validation["is_valid"]:
+            recovery = recovery_agent(resume_data, jd_data, validation)
+            agent_trace.append({
+                "agent": "RecoveryAgent",
+                "output": recovery.get("actions", [])
+            })
+
+            resume_data = recovery["resume_data"]
+            jd_data = recovery["jd_data"]
+
+        # 5. Scoring Agent 
         score_data = scoring_agent(resume_data, jd_data)
         agent_trace.append({
             "agent": "ScoringAgent",
             "output": score_data
         })
 
-        # 4. Decision Agent 
+        # 6. Confidence-based Recheck 
+        if score_data.get("match_score", 0) < 20:
+            agent_trace.append ({
+                "agent": "ReevaluationAgent",
+                "output": "Low confidence score detected"
+            })
+
+        # 7. Decision Agent 
         decision_data = decision_agent(score_data)
         agent_trace.append({
             "agent": "DecisionAgent",
             "output": decision_data
         })
 
-        # 5. Explanation Agent 
+        # 8. Explanation Agent 
         explanation_data = explanation_agent(score_data, decision_data)
         agent_trace.append({
             "agent": "ExplanationAgent",
