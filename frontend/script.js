@@ -94,6 +94,7 @@ function displayResult(data) {
     const suggestions = document.getElementById("suggestions");
     const reportList = document.getElementById("reportList");
     const failureBox = document.getElementById("failureBox");
+    const impactBox = document.getElementById("impactMetrics");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
 
@@ -146,6 +147,17 @@ function displayResult(data) {
         <li><strong>Confidence: </strong> ${f.confidence}</li>
         <li><strong>Explanation: </strong> ${f.explanation}</li>
         <li><strong>Action: </strong> ${f.fix_action}</li>
+        `;
+    }
+
+    impactBox.innerHTML = "";
+    if(data.impact_metrics) {
+        const im = data.impact_metrics;
+
+        impactBox.innerHTML = `
+        <li><strong>Hire Probability: </strong> ${im.hire_probability}</li>
+        <li><strong>Resume Strength: </strong> ${im.resume_strength}</li>
+        <li><strong>Risk Level: </strong> ${im.risk_level}</li>
         `;
     }
 

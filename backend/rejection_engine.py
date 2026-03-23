@@ -73,12 +73,14 @@ def generate_rejection_data(score_data):
     ]
 
     failure_analysis = generate_failure_analysis(score_data)
+    impact_metrics = generate_impact_metrics(score_data)
 
     return {
         "rejection_report": rejection_report,
         "rejection_summary": rejection_summary,
         "improvement_suggestions": improvement_suggestions,
-        "failure_analysis": failure_analysis
+        "failure_analysis": failure_analysis,
+        "impact_metrics": impact_metrics
     }
 
 def generate_failure_analysis(score_data):
@@ -121,3 +123,31 @@ def generate_failure_analysis(score_data):
             "fix_action": "No major improvements needed.",
             "priority": 3
         }
+    
+def generate_impact_metrics(score_data):
+    score = score_data.get("match_score", 0)
+
+    # Hire Probability
+    hire_probability = f"{min(95, max(5, score + 10))}%"
+
+    # Resume Strength
+    if score >= 75:
+        strength = "Strong"
+    elif score >= 50:
+        strength = "Moderate"
+    else:
+        strength = "Weak"
+
+    # Risk Level 
+    if score >= 75:
+        risk = "Low"
+    elif score >= 50:
+        risk = "Medium"
+    else:
+        risk = "High"
+
+    return {
+        "hire_probability": hire_probability,
+        "resume_strength": strength,
+        "risk_level": risk
+    }
