@@ -78,5 +78,6 @@ def explanation_agent(score_data, decision_data):
     return {
         "summary": explanation,
         "rejection_report": rejection_data["rejection_report"],
-        "improvement_suggestions": rejection_data["improvement_suggestions"]
+        "improvement_suggestions": rejection_data["improvement_suggestions"],
+        "failure_analysis": rejection_data["failure_analysis"]
     }

@@ -72,8 +72,52 @@ def generate_rejection_data(score_data):
         for skill in missing_preferred_skills
     ]
 
+    failure_analysis = generate_failure_analysis(score_data)
+
     return {
         "rejection_report": rejection_report,
         "rejection_summary": rejection_summary,
-        "improvement_suggestions": improvement_suggestions
+        "improvement_suggestions": improvement_suggestions,
+        "failure_analysis": failure_analysis
     }
+
+def generate_failure_analysis(score_data):
+    missing_required = score_data.get("missing_skills", [])
+    missing_preferred = score_data.get("missing_preferred_skills", [])
+    match = score_data.get("match_score", 0)
+
+    if missing_required:
+        return {
+            "primary_reason": "Core skill gap",
+            "impact": "High",
+            "confidence": f"{min(100, match + 20)}%",
+            "explanation": ( 
+                f"The candidate lacks mandatory skills required to perform the role effectively."
+                f"Missing: {', '.join(missing_required)}"
+            ),
+            "fix_action": f"Focus on learning: {', '.join(missing_required)}",
+            "priority": 1
+        }
+
+    elif missing_preferred:
+        return {
+            "primary_reason": "Competitive disadvantage",
+            "impact": "Medium",
+            "confidence": f"{min(100, match + 10)}%",
+            "explanation": (
+                "The candidate meets core requirements but lacks preferred skills that increase competitiveness."
+                f"Missing: {', '.join(missing_preferred)}"
+            ),
+            "fix_action": f"Improve profile by adding: {', '.join(missing_preferred)}",
+            "priority": 2
+        }
+
+    else:
+        return {
+            "primary_reason": "Strong alignment",
+            "impact": "Low",
+            "confidence": f"{match}%",
+            "explanation": "Candidate aligns well with job requirements",
+            "fix_action": "No major improvements needed.",
+            "priority": 3
+        }

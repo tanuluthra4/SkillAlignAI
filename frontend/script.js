@@ -93,6 +93,7 @@ function displayResult(data) {
 
     const suggestions = document.getElementById("suggestions");
     const reportList = document.getElementById("reportList");
+    const failureBox = document.getElementById("failureBox");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
 
@@ -133,6 +134,19 @@ function displayResult(data) {
             li.textContent = `${r.reason} (Severity: ${r.severity})`;
             reportList.appendChild(li);
         });
+    }
+
+    failureBox.innerHTML = "";
+    if (data.failure_analysis) {
+        const f = data.failure_analysis;
+
+        failureBox.innerHTML = `
+        <li><strong>Primary Reason: </strong> ${f.primary_reason}</li>
+        <li><strong>Impact: </strong> ${f.impact}</li>
+        <li><strong>Confidence: </strong> ${f.confidence}</li>
+        <li><strong>Explanation: </strong> ${f.explanation}</li>
+        <li><strong>Action: </strong> ${f.fix_action}</li>
+        `;
     }
 
     suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
