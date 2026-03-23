@@ -80,6 +80,9 @@ def run_pipeline(resume_text, jd_text):
             "required_match_percentage": score_data.get("required_match", 0),
             "preferred_match_percentage": score_data.get("preferred_match", 0),
 
+            "skill_contributions": score_data.get("skill_contributions", []),
+            "score_explanation": score_data.get("score_explanation", {}),
+
             "matched_skills": score_data.get("matched_skills", []),
             "missing_skills": score_data.get("missing_skills", []),
             "missing_preferred_skills": score_data.get("missing_preferred_skills", []),

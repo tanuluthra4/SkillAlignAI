@@ -41,7 +41,9 @@ def scoring_agent(resume_data, jd_data):
         "matched_skills": result.get("matched_skills", []),
         "missing_skills": result.get("missing_skills", []),
         "missing_preferred_skills": result.get("missing_preferred_skills", []),
-        "rejection_report": result.get("rejection_report", [])
+        "rejection_report": result.get("rejection_report", []),
+        "skill_contributions": result.get("skill_contributions", []),
+        "score_explanation": result.get("score_explanation", {})
     }
 
 def decision_agent(score_data):

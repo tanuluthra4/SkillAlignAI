@@ -84,9 +84,13 @@ analyzeBtn.addEventListener("click", async function () {
 
 function displayResult(data) {
     const decisionBox = document.getElementById("decisionBox");
+    const breakdownBox = document.getElementById("scoreBreakdown");
     const requiredScore = document.getElementById("requiredScore");
     const preferredScore = document.getElementById("preferredScore");
     const finalScore = document.getElementById("finalScore");
+
+    const matchedRequired = document.getElementById("matchedRequired");
+    const matchedPreferred = document.getElementById("matchedPreferred");
 
     const missingRequired = document.getElementById("missingRequired");
     const missingPreferred = document.getElementById("missingPreferred");
@@ -121,6 +125,20 @@ function displayResult(data) {
     requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
     preferredScore.textContent = (data.preferred_match_percentage ?? 0) + "%";
     finalScore.textContent = (data.match_percentage ?? data.match_score ?? 0) + "%";
+
+    breakdownBox.innerHTML = "";
+    if (data.score_explanation) {
+        const s = data.score_explanation;
+
+        breakdownBox.innerHTML = `
+        <li><strong>Formula: </strong> ${s.formula}</li>
+        `;
+    }
+
+    // Matched Skills 
+    matchedRequired.textContent = data.matched_skills?.length ? data.matched_skills.join(", ") : "None";
+
+    matchedPreferred.textContent = data.matched_preferred_skills?.length ? data.matched_preferred_skills.join(", ") : "None";
 
     // Missing Skills 
     missingRequired.textContent = data.missing_skills?.length ? data.missing_skills.join(", ") : "None";

@@ -29,7 +29,15 @@ def compute_match_score(resume_data, jd_data):
     preferred_match_percentage = int(preferred_match * 100)
     match_percentage = int(match_score * 100)
 
+    score_explanation = {
+        "formula": "0.8 * required_match + 0.2 * preferred_match",
+        "required_match": required_match_percentage,
+        "preferred_match": preferred_match_percentage,
+        "final_score": match_percentage
+    }
+
     matched_skills = list(resume_skills  & required_skills)
+    matched_preferred_skills = list(resume_skills & preferred_skills)
     missing_skills = list(required_skills - resume_skills)
     missing_preferred_skills = list(preferred_skills - resume_skills)
 
@@ -38,8 +46,10 @@ def compute_match_score(resume_data, jd_data):
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
         "matched_skills": matched_skills,
+        "matched_preferred_skills": matched_preferred_skills,
         "missing_skills": missing_skills,
-        "missing_preferred_skills": missing_preferred_skills
+        "missing_preferred_skills": missing_preferred_skills,
+        "score_explanation": score_explanation
     }
 
 def generate_rejection_data(score_data):
