@@ -21,11 +21,25 @@
 
         <div id="decisionBox" class="card decision-box"></div>
 
-        <div class="card">
+        <div class="score-grid">
+            <div class="card score-card">
+                <div class="section-title">Required</div>
+                <div id="requiredScore">0%</div>
+            </div>
+
+            <div class="card score-card">
+                <div class="section-title">Preferred</div>
+                <div id="preferredScore">0%</div>
+            </div>
+
+            <div class="card score-card">
+                <div class="section-title">Final Score</div>
+                <div id="finalScore">0%</div>
+            </div>
+        </div>
+
+         <div class="card">
             <h3>Score Breakdown</h3>
-            <p>Required Match: <span id="requiredScore"></span></p>
-            <p>Preferred Match: <span id="preferredScore"></span></p>
-            <p>Final Match: <span id="finalScore"></span></p>
             <ul id="scoreBreakdown"></ul>
         </div>
 
@@ -82,7 +96,7 @@
 
     <div class="card">
         <h3>Report Preview</h3>
-        <ul id="reportPreview"></ul>
+        <div id="reportPreview"></div>
     </div>
 
     <table border="1">

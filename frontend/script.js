@@ -86,7 +86,7 @@ analyzeBtn.addEventListener("click", async function () {
         document.getElementById("result").style.opacity = "1";
         const decisionBox = document.getElementById("decisionBox");
 
-        decisionBox.textContent = "Unable to connect to server";
+        decisionBox.textContent = console.error(error)/*"Unable to connect to server"*/;
         decisionBox.className = "card decision-box decision-reject";
 
         return;
@@ -309,21 +309,22 @@ function displayResult(data) {
         });
     }
 
-    reportPreview.innerHTML = `
-    <div class="card">
-        <div class="section-title">Report Preview</div>
+    if (reportPreview) {
+        reportPreview.innerHTML = `
+        <div class="card">
+            <div class="section-title">Report Preview</div>
 
-        <p><strong>Decision:</strong> ${data.decision}</p>
-        <p><strong>Match Score:</strong> ${data.match_percentage}%</p>
+            <p><strong>Decision:</strong> ${data.decision}</p>
+            <p><strong>Match Score:</strong> ${data.match_percentage}%</p>
 
-        <p><strong>Key Gaps:</strong> ${
-            data.missing_skills.length || data.missing_preferred_skills.length 
+            <p><strong>Key Gaps:</strong> ${data.missing_skills.length || data.missing_preferred_skills.length
                 ? [...data.missing_skills, ...data.missing_preferred_skills].join(", ")
                 : "None"
-        }</p>
+            }</p>
 
-        <p><strong>Summary:</strong></p>
-        <p>${data.rejection_summary || "No summary available"}</p>
-    </div>
-    `;
+            <p><strong>Summary:</strong></p>
+            <p>${data.rejection_summary || "No summary available"}</p>
+        </div>
+        `;
+    }
 }
