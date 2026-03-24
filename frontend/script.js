@@ -310,10 +310,20 @@ function displayResult(data) {
     }
 
     reportPreview.innerHTML = `
-    <div><strong>Decision: </strong>${data.decision}</div>
-    <div><strong>Match: </strong>${data.match_percentage}%</div>
-    <div><strong>Missing Skills: </strong>${data.missing_skills.join(", ") || "None"}</div>
-    <div style="margin-top:10px;"><strong>Summary:</strong></div>
-    <div> ${data.rejection_summary} </div>
+    <div class="card">
+        <div class="section-title">Report Preview</div>
+
+        <p><strong>Decision:</strong> ${data.decision}</p>
+        <p><strong>Match Score:</strong> ${data.match_percentage}%</p>
+
+        <p><strong>Key Gaps:</strong> ${
+            data.missing_skills.length || data.missing_preferred_skills.length 
+                ? [...data.missing_skills, ...data.missing_preferred_skills].join(", ")
+                : "None"
+        }</p>
+
+        <p><strong>Summary:</strong></p>
+        <p>${data.rejection_summary || "No summary available"}</p>
+    </div>
     `;
 }
