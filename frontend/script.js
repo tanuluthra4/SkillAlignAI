@@ -86,7 +86,8 @@ analyzeBtn.addEventListener("click", async function () {
         document.getElementById("result").style.opacity = "1";
         const decisionBox = document.getElementById("decisionBox");
 
-        decisionBox.textContent = console.error(error)/*"Unable to connect to server"*/;
+        console.error(error)
+        decisionBox.textContent = "Error: " + error.message;
         decisionBox.className = "card decision-box decision-reject";
 
         return;
@@ -292,7 +293,20 @@ function displayResult(data) {
     suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
 
     // Explantion 
-    explanation.textContent = data.explanation || data.rejection_summary || "No explanation available";
+    if (explanation) {
+        const isFallback = data.rejection_summary?.includes("[High]") || data.rejection_summary?.includes("[Medium]") || data.rejection_summary?.includes("[Low]");
+
+        if (!isFallback) {
+            explanation.innerHTML = `
+                <div class="card">
+                    <div class="section-title">AI Explanation</div>
+                    <p>${data.rejection_summary}</p>
+                </div>
+            `;
+        } else {
+            explanation.innerHTML = "";
+        }
+    }
 
     // Audit Trail 
     auditTrail.innerHTML = "";
