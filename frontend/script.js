@@ -68,6 +68,28 @@ analyzeBtn.addEventListener("click", async function () {
         document.getElementById("loaderOverlay").classList.add("hidden");
         document.getElementById("result").style.opacity = "1";
         displayResult(data);
+        window.latestData = data;
+
+        const downloadBtn = document.getElementById("downloadReport");
+
+        downloadBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!window.latestData || !window.latestData.export_report) return;
+
+            const dataStr = JSON.stringify(window.latestData.export_report, null, 2)
+
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "SkillAlign_Report.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        };
 
     } catch (error) {
         document.getElementById("loaderOverlay").classList.add("hidden");
@@ -101,6 +123,7 @@ function displayResult(data) {
     const impactBox = document.getElementById("impactMetrics");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
+    const reportPreview = document.getElementById("reportPreview");
 
     data.matched_skills = data.matched_skills || [];
     data.missing_skills = data.missing_skills || [];
@@ -202,4 +225,12 @@ function displayResult(data) {
             auditTrail.appendChild(li);
         });
     }
+
+    reportPreview.innerHTML = `
+    <div><strong>Decision: </strong>${data.decision}</div>
+    <div><strong>Match: </strong>${data.match_percentage}%</div>
+    <div><strong>Missing Skills: </strong>${data.missing_skills.join(", ") || "None"}</div>
+    <div style="margin-top:10px;"><strong>Summary:</strong></div>
+    <div> ${data.rejection_summary} </div>
+    `;
 }

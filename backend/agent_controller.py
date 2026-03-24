@@ -7,6 +7,7 @@ from backend.agents import (
     validation_agent,
     recovery_agent
 )
+from backend.report_generator import generate_report
 
 def run_pipeline(resume_text, jd_text):
     agent_trace = []
@@ -73,7 +74,7 @@ def run_pipeline(resume_text, jd_text):
         })
 
         # Final Response 
-        return {
+        final_output = {
             "decision": decision_data["decision"],
 
             "match_percentage": score_data.get("match_score", 0),
@@ -95,6 +96,10 @@ def run_pipeline(resume_text, jd_text):
 
             "agent_trace": agent_trace
         }
+
+        final_output["export_report"] = generate_report(final_output)
+        
+        return final_output
     
     except Exception as e:
         return {

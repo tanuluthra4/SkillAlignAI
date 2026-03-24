@@ -92,3 +92,7 @@ strong {
 .hidden {
     display: none;
 }
+
+#reportPreview div {
+    margin-bottom: 6px;
+}
