@@ -18,85 +18,95 @@
     <button id="clearCandidates" type="button">Clear</button>
 
     <div id="result" class="result-container">
+        <div class="main-grid">
 
-        <div id="decisionBox" class="card decision-box"></div>
+            <div class="left-panel">
 
-        <div class="score-grid">
-            <div class="card score-card">
-                <div class="section-title">Required</div>
-                <div id="requiredScore">0%</div>
+                <div id="decisionBox" class="card decision-box"></div>
+
+                <div class="score-grid">
+                    <div class="card score-card">
+                        <div class="section-title">Required</div>
+                        <div id="requiredScore">0%</div>
+                    </div>
+
+                    <div class="card score-card">
+                        <div class="section-title">Preferred</div>
+                        <div id="preferredScore">0%</div>
+                    </div>
+
+                    <div class="card score-card">
+                        <div class="section-title">Final Score</div>
+                        <div id="finalScore">0%</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Score Breakdown</h3>
+                    <ul id="scoreBreakdown"></ul>
+                </div>
+
+                <div class="card">
+                    <h3>Screening Report</h3>
+                    <ul id="reportList"></ul>
+                </div>
+
+                <div class="card">
+                    <h3>Failure Analysis</h3>
+                    <ul id="failureAnalysis"></ul>
+                </div>
+
+                <div class="card">
+                    <h3>Impact Metrics</h3>
+                    <ul id="impactMetrics"></ul>
+                </div>
+
+                <div class="card scroll-box">
+                    <h3>Agent Execution Trace</h3>
+                    <ul id="auditTrail"></ul>
+                </div>
+
             </div>
 
-            <div class="card score-card">
-                <div class="section-title">Preferred</div>
-                <div id="preferredScore">0%</div>
+            <div class="right-panel">
+
+                <div class="card">
+                    <h3>Matched Skills</h3>
+                    <p><strong>Matched Required Skills:</strong> <span id="matchedRequired"></span></p>
+                    <p><strong>Matched Preferred Skills:</strong> <span id="matchedPreferred"></span></p>
+                </div>
+
+                <div class="card">
+                    <h3>Skill Gaps</h3>
+                    <p><strong>Missing Required Skills:</strong> <span id="missingRequired"></span></p>
+                    <p><strong>Missing Preferred Skills:</strong> <span id="missingPreferred"></span></p>
+                </div>
+
+                <div class="card">
+                    <h3>Suggestions</h3>
+                    <p id="suggestions"></p>
+                </div>
+
+                <div class="card scroll-box">
+                    <div id="explanation"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Report Preview</h3>
+                    <div id="reportPreview"></div>
+                </div>
+
             </div>
 
-            <div class="card score-card">
-                <div class="section-title">Final Score</div>
-                <div id="finalScore">0%</div>
-            </div>
-        </div>
-
-         <div class="card">
-            <h3>Score Breakdown</h3>
-            <ul id="scoreBreakdown"></ul>
-        </div>
-
-        <div class="card">
-            <h3>Matched Skills</h3>
-            <p><strong>Matched Required Skills:</strong> <span id="matchedRequired"></span></p>
-            <p><strong>Matched Preferred Skills:</strong> <span id="matchedPreferred"></span></p>
-        </div>
-
-        <div class="card">
-            <h3>Skill Gaps</h3>
-            <p><strong>Missing Required Skills:</strong> <span id="missingRequired"></span></p>
-            <p><strong>Missing Preferred Skills:</strong> <span id="missingPreferred"></span></p>
-        </div>
-
-        <div class="card">
-            <h3>Suggestions</h3>
-            <p id="suggestions"></p>
-        </div>
-
-        <div class="card">
-            <h3>Screening Report</h3>
-            <ul id="reportList"></ul>
-        </div>
-
-        <div class="card">
-            <h3>Failure Analysis</h3>
-            <ul id="failureAnalysis"></ul>
-        </div>
-
-        <div class="card">
-            <h3>Impact Metrics</h3>
-            <ul id="impactMetrics"></ul>
-        </div>
-
-        <div class="card scroll-box">
-            <div id="explanation"></div>
-        </div>
-
-        <div class="card scroll-box">
-            <h3>Agent Execution Trace</h3>
-            <ul id="auditTrail"></ul>
         </div>
 
         <div id="loaderOverlay" class="loader-overlay hidden">
             <div class="loader-text">Analyzing...</div>
         </div>
-
     </div>
 
     <button id="downloadReport" type="button">Download Report</button>
     <button id="downloadPDF" type="button">Download PDF</button>
-
-    <div class="card">
-        <h3>Report Preview</h3>
-        <div id="reportPreview"></div>
-    </div>
 
     <table border="1">
         <thead>
