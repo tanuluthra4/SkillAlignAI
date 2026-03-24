@@ -1,4 +1,6 @@
 const analyzeBtn = document.getElementById("analyzeBtn");
+const downloadBtn = document.getElementById("downloadReport");
+let allCandidates = [];
 
 const BASE_URL =
     window.location.hostname === "127.0.0.1" ||
@@ -7,7 +9,6 @@ const BASE_URL =
         : "https://skillalignai.onrender.com";
 
 analyzeBtn.addEventListener("click", async function () {
-    const resultDiv = document.getElementById("result");
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
     const resumeFile = document.getElementById("resumeFile").files[0];
@@ -68,75 +69,17 @@ analyzeBtn.addEventListener("click", async function () {
         document.getElementById("loaderOverlay").classList.add("hidden");
         document.getElementById("result").style.opacity = "1";
         displayResult(data);
+
         window.latestData = data;
 
-        const downloadBtn = document.getElementById("downloadReport");
-
-        downloadBtn.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (!window.latestData || !window.latestData.export_report) return;
-
-            const dataStr = JSON.stringify(window.latestData.export_report, null, 2)
-
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "SkillAlign_Report.json";
-            a.click();
-
-            URL.revokeObjectURL(url);
-        };
-
-        document.getElementById("downloadPDF").onclick = function () {
-            if (!window.latestData) return;
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const data = window.latestData;
-
-            let y = 10;
-
-            doc.setFontSize(14);
-            doc.text("SkillAlignAI Report", 10, y);
-
-            y += 10;
-            doc.setFontSize(11);
-
-            doc.text(`Decision: ${data.decision}`, 10, y);
-            y += 7;
-
-            doc.text(`Match Score: ${data.match_percentage}%`, 10, y);
-            y += 7;
-
-            doc.text(`Required Match: ${data.required_match_percentage}%`, 10, y);
-            y += 7;
-
-            doc.text(`Preferred Match: ${data.preferred_match_percentage}%`, 10, y);
-            y += 10;
-
-            doc.text("Missing Skills:", 10, y);
-            y += 7;
-
-            const missing = data.missing_skills?.length
-                ? data.missing_skills.join(", ")
-                : "None";
-
-            doc.text(missing, 10, y);
-            y += 10;
-
-            doc.text("Summary:", 10, y);
-            y += 7;
-
-            const summaryLines = doc.splitTextToSize(data.rejection_summary, 180);
-            doc.text(summaryLines, 10, y);
-
-            doc.save("SkillAlign_Report.pdf");
-        };
+        // store candidate 
+        allCandidates.push({
+            name: `Candidate ${allCandidates.length + 1}`,
+            score: data.match_percentage,
+            decision: data.decision,
+            missing: data.missing_skills,
+            data: data
+        });
 
     } catch (error) {
         document.getElementById("loaderOverlay").classList.add("hidden");
@@ -150,6 +93,99 @@ analyzeBtn.addEventListener("click", async function () {
     }
 
 });
+
+downloadBtn.onclick = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!window.latestData || !window.latestData.export_report) return;
+
+    const dataStr = JSON.stringify(window.latestData.export_report, null, 2)
+
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "SkillAlign_Report.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+};
+
+document.getElementById("downloadPDF").onclick = function () {
+    if (!window.latestData) return;
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const data = window.latestData;
+
+    let y = 10;
+
+    doc.setFontSize(14);
+    doc.text("SkillAlignAI Report", 10, y);
+
+    y += 10;
+    doc.setFontSize(11);
+
+    doc.text(`Decision: ${data.decision}`, 10, y);
+    y += 7;
+
+    doc.text(`Match Score: ${data.match_percentage}%`, 10, y);
+    y += 7;
+
+    doc.text(`Required Match: ${data.required_match_percentage}%`, 10, y);
+    y += 7;
+
+    doc.text(`Preferred Match: ${data.preferred_match_percentage}%`, 10, y);
+    y += 10;
+
+    doc.text("Missing Skills:", 10, y);
+    y += 7;
+
+    const missing = data.missing_skills?.length
+        ? data.missing_skills.join(", ")
+        : "None";
+
+    doc.text(missing, 10, y);
+    y += 10;
+
+    doc.text("Summary:", 10, y);
+    y += 7;
+
+    const summaryLines = doc.splitTextToSize(data.rejection_summary, 180);
+    doc.text(summaryLines, 10, y);
+
+    doc.save("SkillAlign_Report.pdf");
+};
+
+document.getElementById("compareBtn").onclick = function () {
+    const table = document.getElementById("comparisonTable");
+    table.innerHTML = "";
+
+    // sort by score DESC 
+    const sorted = [...allCandidates].sort((a, b) => b.score - a.score);
+
+    sorted.forEach((c, index) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>#${index + 1}</td>
+            <td>${c.name}</td>
+            <td>${c.score}</td>
+            <td>${c.decision}</td>
+            <td>${c.missing?.join(", ") || "None"}</td>
+        `;
+
+        table.appendChild(row);
+    });
+}
+
+document.getElementById("clearCandidates").onclick = function () {
+    allCandidates = [];
+    document.getElementById("comparisonTable").innerHTML = "";
+}
 
 function displayResult(data) {
     const decisionBox = document.getElementById("decisionBox");
