@@ -70,7 +70,16 @@ h3 {
 
 .decsion-reject {
     background: #f8d7da;
-    color: #721c24;
+    color: #a51725;
+}
+
+#failureAnalysis ul {
+    padding-left: 18px;
+    margin-bottom: 10px;
+}
+
+#failureAnalysis li {
+    margin-bottom: 6px;
 }
 
 /* Scrollable Boxes */

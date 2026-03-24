@@ -202,7 +202,7 @@ function displayResult(data) {
 
     const suggestions = document.getElementById("suggestions");
     const reportList = document.getElementById("reportList");
-    const failureBox = document.getElementById("failureBox");
+    const failureAnalysisDiv = document.getElementById("failureAnalysis");
     const impactBox = document.getElementById("impactMetrics");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
@@ -261,16 +261,20 @@ function displayResult(data) {
         });
     }
 
-    failureBox.innerHTML = "";
-    if (data.failure_analysis) {
-        const f = data.failure_analysis;
+    if (failureAnalysisDiv && data.failure_analysis) {
+        const fa = data.failure_analysis;
 
-        failureBox.innerHTML = `
-        <li><strong>Primary Reason: </strong> ${f.primary_reason}</li>
-        <li><strong>Impact: </strong> ${f.impact}</li>
-        <li><strong>Confidence: </strong> ${f.confidence}</li>
-        <li><strong>Explanation: </strong> ${f.explanation}</li>
-        <li><strong>Action: </strong> ${f.fix_action}</li>
+        failureAnalysisDiv.innerHTML = `
+            <div class="card">
+                <ul>
+                    <li><strong>Primary Reason:</strong> ${fa.primary_reason}</li>
+                    <li><strong>Impact:</strong> ${fa.impact}</li>
+                    <li><strong>Confidence:</strong> ${fa.confidence}</li>
+                </ul>
+                
+                <p><strong>Explanation:</strong><br>${fa.explanation}</p>
+                <p><strong>Action:</strong><br>${fa.fix_action}</p>
+            </div>
         `;
     }
 
@@ -312,7 +316,6 @@ function displayResult(data) {
     if (reportPreview) {
         reportPreview.innerHTML = `
         <div class="card">
-            <div class="section-title">Report Preview</div>
 
             <p><strong>Decision:</strong> ${data.decision}</p>
             <p><strong>Match Score:</strong> ${data.match_percentage}%</p>
