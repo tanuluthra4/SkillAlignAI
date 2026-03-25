@@ -1,6 +1,10 @@
 from backend.rejection_report import build_rejection_report
 from backend.fallback_explainer import generate_fallback_summary
 from backend.utils.normalizer import normalize_skills, is_similar
+from backend.utils.skill_weights import SKILL_WEIGHTS
+
+def get_weight(skill): 
+    return SKILL_WEIGHTS.get(skill, 0.6) # default weight
 
 def get_fuzzy_matches(resume_skills, jd_skills):
     matched = set()
@@ -24,16 +28,22 @@ def compute_match_score(resume_data, jd_data):
     REQUIRED_WEIGHT = 0.8
     PREFERRED_WEIGHT = 0.2
 
+    total_required_weight = sum(get_weight(s) for s in required_skills)
+    matched_required_weight = sum(get_weight(s) for s in matched_skills)
+
+    total_preferred_weight = sum(get_weight(s) for s in preferred_skills)
+    matched_preferred_weight = sum(get_weight(s) for s in matched_preferred_skills)
+
     required_match = 0
     preferred_match = 0
 
     if required_skills:
-        required_match = len(matched_skills) / len(required_skills)
+        required_match = matched_required_weight / total_required_weight
     else:
         required_match = 1
 
     if preferred_skills:
-        preferred_match = len(matched_preferred_skills) / len(preferred_skills)
+        preferred_match = matched_preferred_weight / total_preferred_weight
     else:
         preferred_match = 1
 
