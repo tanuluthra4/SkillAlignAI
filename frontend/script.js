@@ -171,8 +171,32 @@ document.getElementById("compareBtn").onclick = function () {
     const table = document.getElementById("comparisonTable");
     table.innerHTML = "";
 
+    function computeRankScore(candidate) {
+        let score = candidate.score;
+
+        const risk = candidate.data?.impact_metrics?.risk_level;
+
+        // Penalize risk 
+        if (risk === "High") score -= 30;
+        else if (risk === "Medium") score -= 15;
+
+        // Penalize missing required skills heavily
+        if (candidate.data?.missing_skills?.length > 0) {
+            score -= 25;
+        }
+
+        // Boost strong fits
+        if (candidate.decision === "Strong Fit") {
+            score += 10;
+        }
+
+        return score;
+    }
+
     // sort by score DESC 
-    const sorted = [...allCandidates].sort((a, b) => b.score - a.score);
+    const sorted = [...allCandidates].sort((a, b) =>
+        computeRankScore(b) - computeRankScore(a)
+    );
 
     sorted.forEach((c, index) => {
         const row = document.createElement("tr");
@@ -180,6 +204,7 @@ document.getElementById("compareBtn").onclick = function () {
         row.innerHTML = `
             <td>#${index + 1}</td>
             <td>${c.name}</td>
+            <td>${computeRankScore(c)}</td>
             <td>${c.score}</td>
             <td>${c.decision}</td>
             <td>${c.missing?.join(", ") || "None"}</td>
@@ -308,7 +333,7 @@ function displayResult(data) {
             <p><strong>Hire Probability: </strong> ${im.hire_probability}</p>
             <p><strong>Resume Strength: </strong> ${im.resume_strength}</p>
             <p><strong>Risk Level: </strong> <span style="color:${color}; font-weight:bold;"> ${risk}</span></p>
-        `;      
+        `;
     }
 
     suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
