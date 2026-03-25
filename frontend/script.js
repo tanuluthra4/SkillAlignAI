@@ -227,7 +227,7 @@ function displayResult(data) {
     data.missing_skills = data.missing_skills || [];
     data.missing_preferred_skills = data.missing_preferred_skills || [];
 
-    window.lastResult = data;
+    window.latestData = data;
 
     // Decision 
     decisionBox.className = "card decision-box";
