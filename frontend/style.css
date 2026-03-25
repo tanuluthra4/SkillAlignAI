@@ -61,6 +61,16 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.tag {
+    display: inline-block;
+    background: #eef2ff;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 12px;
+    margin: 3px;
+    font-size: 12px;
+}
+
 /* Headings */
 h2,
 h3 {
@@ -79,18 +89,21 @@ h3 {
 
 /* Decision Colors */
 .decision-strong {
-    background: #d4edda;
+    background: #e6f9f0;
     color: #155724;
+    border-left: 5px solid #2ecc71;
 }
 
 .decision-borderline {
-    background: #fff3cd;
+    background: #fff8e6;
     color: #856404;
+    border-left: 5px solid #f1c40f;
 }
 
 .decsion-reject {
-    background: #f8d7da;
+    background: #fdecea;
     color: #a51725;
+    border-left: 5px solid #e74c3c;
 }
 
 #failureAnalysis ul {

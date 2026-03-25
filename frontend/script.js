@@ -188,6 +188,20 @@ document.getElementById("clearCandidates").onclick = function () {
     document.getElementById("comparisonTable").innerHTML = "";
 }
 
+function renderTags(containerId, items) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    if (!items || items.length == 0) {
+        el.innerHTML = "None";
+        return;
+    }
+
+    el.innerHTML = items.map(skill =>
+        `<span class="tag">${skill}</span>`
+    ).join(" ");
+}
+
 function displayResult(data) {
     const decisionBox = document.getElementById("decisionBox");
     const breakdownBox = document.getElementById("scoreBreakdown");
@@ -243,14 +257,12 @@ function displayResult(data) {
     }
 
     // Matched Skills 
-    matchedRequired.textContent = data.matched_skills?.length ? data.matched_skills.join(", ") : "None";
-
-    matchedPreferred.textContent = data.matched_preferred_skills?.length ? data.matched_preferred_skills.join(", ") : "None";
+    renderTags("matchedRequired", data.matched_skills);
+    renderTags("matchedPreferred", data.matched_preferred_skills);
 
     // Missing Skills 
-    missingRequired.textContent = data.missing_skills?.length ? data.missing_skills.join(", ") : "None";
-
-    missingPreferred.textContent = data.missing_preferred_skills?.length ? data.missing_preferred_skills.join(", ") : "None";
+    renderTags("missingRequired", data.missing_skills);
+    renderTags("missingPreferred", data.missing_preferred_skills);
 
     // Report 
     reportList.innerHTML = "";
@@ -283,11 +295,18 @@ function displayResult(data) {
     if (data.impact_metrics) {
         const im = data.impact_metrics;
 
+        const risk = im.risk_level;
+
+        let color = '#2ecc71'; // low
+
+        if (risk == "Medium") color = "#f1c40f";
+        if (risk == "High") color = "#e74c3c";
+
         impactBox.innerHTML = `
-        <li><strong>Hire Probability: </strong> ${im.hire_probability}</li>
-        <li><strong>Resume Strength: </strong> ${im.resume_strength}</li>
-        <li><strong>Risk Level: </strong> ${im.risk_level}</li>
-        `;
+            <p><strong>Hire Probability: </strong> ${im.hire_probability}</p>
+            <p><strong>Resume Strength: </strong> ${im.resume_strength}</p>
+            <p><strong>Risk Level: </strong> <span style="color:${color}; font-weight:bold;"> ${risk}</span></p>
+        `;      
     }
 
     suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
