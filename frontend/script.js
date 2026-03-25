@@ -167,6 +167,35 @@ document.getElementById("downloadPDF").addEventListener("click", function () {
     doc.save("SkillAlign_Report.pdf");
 });
 
+function compareCandidates(c1, c2) {
+    let reasons = [];
+
+    // Score comparison
+    if (c1.score > c2.score) {
+        reasons.push(`Higher match score (${c1.score}% vs ${c2.score}%)`);
+    }
+
+    // Risk comparison 
+    const riskOrder = { Low: 1, Medium: 2, High: 3 };
+
+    const r1 = c1.data?.impact_metrics?.risk_level;
+    const r2 = c2.data?.impact_metrics?.risk_level;
+
+    if (r1 && r2 && riskOrder[r1] < riskOrder[r2]) {
+        reasons.push(`Lower risk level (${r1} vs ${r2})`);
+    }
+
+    // Missing required skills 
+    const m1 = c1.data?.missing_skills?.length || 0;
+    const m2 = c2.data?.missing_skills?.length || 0;
+
+    if (m1 < m2) {
+        reasons.push(`Fewer missing required skills (${m1} vs ${m2})`);
+    }
+
+    return reasons;
+}
+
 document.getElementById("compareBtn").onclick = function () {
     const table = document.getElementById("comparisonTable");
     table.innerHTML = "";
@@ -197,6 +226,24 @@ document.getElementById("compareBtn").onclick = function () {
     const sorted = [...allCandidates].sort((a, b) =>
         computeRankScore(b) - computeRankScore(a)
     );
+
+    const comparisonBox = document.getElementById("comparisonExplanation");
+
+    if (sorted.length >= 2) {
+        const best = sorted[0];
+        const second = sorted[1];
+
+        const reasons = compareCandidates(best, second);
+
+        comparisonBox.innerHTML = `
+            <div class="card">
+                <h3>Why ${best.name} ranks higher than ${second.name}</h3>
+                <ul>
+                    ${reasons.map(r => `<li>${r}</li>`).join("")}
+                </ul>
+            </div>
+        `;
+    }
 
     sorted.forEach((c, index) => {
         const row = document.createElement("tr");
