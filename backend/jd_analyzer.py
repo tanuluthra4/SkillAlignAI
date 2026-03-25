@@ -16,7 +16,7 @@ def extract_jd_requirements(jd_text):
     preferred_skills = set()
 
     skill_keywords = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "js", "rest api", "data structures", "algorithms", "docker", "css", "c", "machine learning", "ml", "react.js", "react", "ai", "artificial intelligence"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "machine learning", "ml", "react.js", "react", "ai", "artificial intelligence", "api"
     ]
 
     # Split JD into sections
@@ -55,7 +55,7 @@ def extract_jd_requirements(jd_text):
 
     role = detect_role(jd_text)
 
-    if role:
+    if role and len(required_skills) == 0:
         role_skills = ROLE_SKILL_MAP.get(role, [])
         required_skills.update(role_skills)
 

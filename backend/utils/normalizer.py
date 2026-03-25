@@ -1,3 +1,8 @@
+from difflib import SequenceMatcher
+
+def is_similar(a, b, threshold=0.8):
+    return SequenceMatcher(None, a, b).ratio() >= threshold
+
 SKILL_NORMALIZATION = {
     "js": "javascript",
     "nodejs": "node",

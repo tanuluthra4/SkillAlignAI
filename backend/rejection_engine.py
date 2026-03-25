@@ -1,11 +1,25 @@
 from backend.rejection_report import build_rejection_report
 from backend.fallback_explainer import generate_fallback_summary
-from backend.utils.normalizer import normalize_skills
+from backend.utils.normalizer import normalize_skills, is_similar
+
+def get_fuzzy_matches(resume_skills, jd_skills):
+    matched = set()
+
+    for jd_skill in jd_skills:
+        for res_skill in resume_skills:
+            if res_skill == jd_skill or is_similar(res_skill, jd_skill):
+                matched.add(jd_skill)
+                break
+
+    return matched 
 
 def compute_match_score(resume_data, jd_data): 
     resume_skills = set(normalize_skills(resume_data.get("skills", [])))
     required_skills = set(normalize_skills(jd_data.get("required_skills", [])))
     preferred_skills = set(normalize_skills(jd_data.get("preferred_skills", [])))
+
+    matched_skills = get_fuzzy_matches(resume_skills, required_skills)
+    matched_preferred_skills = get_fuzzy_matches(resume_skills, preferred_skills)
 
     REQUIRED_WEIGHT = 0.8
     PREFERRED_WEIGHT = 0.2
@@ -14,12 +28,12 @@ def compute_match_score(resume_data, jd_data):
     preferred_match = 0
 
     if required_skills:
-        required_match = len(resume_skills & required_skills) / len(required_skills)
+        required_match = len(matched_skills) / len(required_skills)
     else:
         required_match = 1
 
     if preferred_skills:
-        preferred_match = (len(resume_skills & preferred_skills) / len(preferred_skills))
+        preferred_match = len(matched_preferred_skills) / len(preferred_skills)
     else:
         preferred_match = 1
 
@@ -36,8 +50,6 @@ def compute_match_score(resume_data, jd_data):
         "final_score": match_percentage
     }
 
-    matched_skills = list(resume_skills  & required_skills)
-    matched_preferred_skills = list(resume_skills & preferred_skills)
     missing_skills = list(required_skills - resume_skills)
     missing_preferred_skills = list(preferred_skills - resume_skills)
 
@@ -45,8 +57,8 @@ def compute_match_score(resume_data, jd_data):
         "match_score": match_percentage,
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
-        "matched_skills": matched_skills,
-        "matched_preferred_skills": matched_preferred_skills,
+        "matched_skills": list(matched_skills),
+        "matched_preferred_skills": list(matched_preferred_skills),
         "missing_skills": missing_skills,
         "missing_preferred_skills": missing_preferred_skills,
         "score_explanation": score_explanation

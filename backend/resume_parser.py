@@ -5,7 +5,7 @@ def extract_resume_info(resume_text):
     skills = set()
 
     common_skills = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "js", "html", "css", "machine learning", "ml", "data structures", "rest api", "algorithms", "react.js", "react", "ai", "artificial intelligence"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "html", "css", "machine learning", "ml", "data structures", "rest api", "algorithms", "react.js", "react", "ai", "artificial intelligence", "api"
     ]
 
     tokens = set(re.findall(r'\b\w+\b', resume_text))
