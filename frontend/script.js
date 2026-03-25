@@ -114,9 +114,7 @@ downloadBtn.onclick = function (e) {
     URL.revokeObjectURL(url);
 };
 
-document.getElementById("downloadPDF").onclick = function () {
-    if (!window.latestData) return;
-
+document.getElementById("downloadPDF").addEventListener("click", function () {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -124,42 +122,50 @@ document.getElementById("downloadPDF").onclick = function () {
 
     let y = 10;
 
-    doc.setFontSize(14);
-    doc.text("SkillAlignAI Report", 10, y);
+    function addLine(text) {
+        doc.text(text, 10, y);
+        y += 8
+    }
 
-    y += 10;
-    doc.setFontSize(11);
+    // Title
+    doc.setFontSize(16);
+    addLine("SkillAlignAI Report");
 
-    doc.text(`Decision: ${data.decision}`, 10, y);
-    y += 7;
+    doc.setFontSize(12);
+    y += 5;
 
-    doc.text(`Match Score: ${data.match_percentage}%`, 10, y);
-    y += 7;
+    // Basic Info
+    addLine(`Decision: ${data.decision}`);
+    addLine(`Match Score: ${data.match_percentage}%`);
 
-    doc.text(`Required Match: ${data.required_match_percentage}%`, 10, y);
-    y += 7;
+    y += 5;
 
-    doc.text(`Preferred Match: ${data.preferred_match_percentage}%`, 10, y);
-    y += 10;
+    // Skills
+    addLine("Matched Required Skills:")
+    addLine((data.matched_skills || []).join(", ") || "None");
 
-    doc.text("Missing Skills:", 10, y);
-    y += 7;
+    y += 5;
 
-    const missing = data.missing_skills?.length
-        ? data.missing_skills.join(", ")
-        : "None";
+    addLine("Missing Skills:");
+    addLine((data.missing_skills || []).join(", ") || "None");
 
-    doc.text(missing, 10, y);
-    y += 10;
+    y += 5;
 
-    doc.text("Summary:", 10, y);
-    y += 7;
+    // Failure Analysis
+    const fa = data.failure_analysis || {};
+    addLine("Failure Analysis:");
+    addLine(`Reason: ${fa.primary_reason || "-"}`);
+    addLine(`Impact: ${fa.impact || "-"}`);
 
-    const summaryLines = doc.splitTextToSize(data.rejection_summary, 180);
-    doc.text(summaryLines, 10, y);
+    y += 5
 
+    // Suggestions
+    addLine("Suggestions:");
+    addLine((data.improvement_suggestions || []).join(", ") || "None");
+
+    // Save
     doc.save("SkillAlign_Report.pdf");
-};
+});
 
 document.getElementById("compareBtn").onclick = function () {
     const table = document.getElementById("comparisonTable");
@@ -209,12 +215,6 @@ function displayResult(data) {
     const preferredScore = document.getElementById("preferredScore");
     const finalScore = document.getElementById("finalScore");
 
-    const matchedRequired = document.getElementById("matchedRequired");
-    const matchedPreferred = document.getElementById("matchedPreferred");
-
-    const missingRequired = document.getElementById("missingRequired");
-    const missingPreferred = document.getElementById("missingPreferred");
-
     const suggestions = document.getElementById("suggestions");
     const reportList = document.getElementById("reportList");
     const failureAnalysisDiv = document.getElementById("failureAnalysis");
@@ -226,6 +226,8 @@ function displayResult(data) {
     data.matched_skills = data.matched_skills || [];
     data.missing_skills = data.missing_skills || [];
     data.missing_preferred_skills = data.missing_preferred_skills || [];
+
+    window.lastResult = data;
 
     // Decision 
     decisionBox.className = "card decision-box";
