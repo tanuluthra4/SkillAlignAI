@@ -39,6 +39,7 @@ def scoring_agent(resume_data, jd_data):
         "required_match": result.get("required_match", 0),
         "preferred_match": result.get("preferred_match", 0),
         "matched_skills": result.get("matched_skills", []),
+        "matched_preferred_skills": result.get("matched_preferred_skills", []),
         "missing_skills": result.get("missing_skills", []),
         "missing_preferred_skills": result.get("missing_preferred_skills", []),
         "rejection_report": result.get("rejection_report", []),

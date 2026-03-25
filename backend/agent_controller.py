@@ -85,6 +85,8 @@ def run_pipeline(resume_text, jd_text):
             "score_explanation": score_data.get("score_explanation", {}),
 
             "matched_skills": score_data.get("matched_skills", []),
+            "matched_preferred_skills":score_data.get("matched_preferred_skills", []),
+            
             "missing_skills": score_data.get("missing_skills", []),
             "missing_preferred_skills": score_data.get("missing_preferred_skills", []),
 
