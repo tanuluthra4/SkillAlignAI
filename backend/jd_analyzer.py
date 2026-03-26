@@ -61,6 +61,18 @@ def extract_jd_requirements(jd_text):
 
     role = detect_role(jd_text)
 
+    # fallback if role not explicitly found
+    if not role: 
+
+        if "react" in required_skills or "html" in required_skills or "css" in required_skills:
+            role = "frontend"
+
+        elif "node" in required_skills or "sql" in required_skills or "flask" in required_skills:
+            role = "backend"
+        
+        elif "machine learning" in required_skills or "ai" in required_skills:
+            role = "ai"
+
     if role and len(required_skills) == 0:
         role_skills = ROLE_SKILL_MAP.get(role, [])
         required_skills.update(role_skills)

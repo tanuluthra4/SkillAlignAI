@@ -47,6 +47,7 @@ def run_pipeline(resume_text, jd_text):
 
         # 5. Scoring Agent 
         score_data = scoring_agent(resume_data, jd_data)
+        score_data["role"] = jd_data.get("role")
         agent_trace.append({
             "agent": "ScoringAgent",
             "output": score_data
