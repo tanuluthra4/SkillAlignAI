@@ -31,6 +31,28 @@ def get_fuzzy_matches(resume_skills, jd_skills):
 
     return matched 
 
+def get_skill_strength(skill, resume_data):
+    strength = 1.0
+
+    text = resume_data.get("raw_text", "")
+
+    # frequency boost 
+    freq = text.count(skill)
+    if freq >= 3:
+        strength *= 1.3
+    elif freq == 2:
+        strength *= 1.15
+
+    # Project boost
+    if skill in " ".join(resume_data.get("projects", [])):
+        strength *= 1.5
+
+    # Experience boost
+    if skill in " ".join(resume_data.get("experience", [])):
+        strength *= 2.0
+
+    return strength
+
 def compute_match_score(resume_data, jd_data): 
     resume_skills = set(normalize_skills(resume_data.get("skills", [])))
     required_skills = set(normalize_skills(jd_data.get("required_skills", [])))
@@ -44,11 +66,23 @@ def compute_match_score(resume_data, jd_data):
     REQUIRED_WEIGHT = 0.8
     PREFERRED_WEIGHT = 0.2
 
-    total_required_weight = sum(get_weight(s, role) for s in required_skills)
-    matched_required_weight = sum(get_weight(s, role) for s in matched_skills)
+    total_required_weight = sum(
+        get_weight(s, role) * get_skill_strength(s, resume_data)
+        for s in required_skills
+    )
+    matched_required_weight = sum(
+        get_weight(s, role) * get_skill_strength(s, resume_data)
+        for s in matched_skills
+    )
 
-    total_preferred_weight = sum(get_weight(s, role) for s in preferred_skills)
-    matched_preferred_weight = sum(get_weight(s, role) for s in matched_preferred_skills)
+    total_preferred_weight = sum(
+        get_weight(s, role) * get_skill_strength(s, resume_data) 
+        for s in preferred_skills
+    )
+    matched_preferred_weight = sum(
+        get_weight(s, role) *get_skill_strength(s, resume_data)
+        for s in matched_preferred_skills
+    )
 
     required_match = 0
     preferred_match = 0
