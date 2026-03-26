@@ -319,16 +319,14 @@ function displayResult(data) {
     // Scores
     requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
     preferredScore.textContent = (data.preferred_match_percentage ?? 0) + "%";
+    document.getElementById("domainScore").textContent =
+        (data.domain_match_percentage ?? 0) + "%";
     finalScore.textContent = (data.match_percentage ?? data.match_score ?? 0) + "%";
 
-    breakdownBox.innerHTML = "";
-    if (data.score_explanation) {
-        const s = data.score_explanation;
-
-        breakdownBox.innerHTML = `
-        <li><strong>Formula: </strong> ${s.formula}</li>
-        `;
-    }
+    breakdownBox.innerHTML = `
+        <li><strong>Base:</strong> 0.8 × required + 0.2 × preferred</li>
+        <li><strong>Final:</strong> Base × (0.7 + 0.3 × domain)</li>
+    `;
 
     // Matched Skills 
     renderTags("matchedRequired", data.matched_skills);
@@ -337,6 +335,8 @@ function displayResult(data) {
     // Missing Skills 
     renderTags("missingRequired", data.missing_skills);
     renderTags("missingPreferred", data.missing_preferred_skills);
+
+    renderTags("domainSkills", data.matched_domain_skills);
 
     // Report 
     reportList.innerHTML = "";

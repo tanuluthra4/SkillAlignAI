@@ -7,7 +7,8 @@ def detect_role(jd_text):
     role_patterns = {
         "frontend": r"\b(frontend|front-end)\b",
         "backend": r"\b(backend|back-end)\b",
-        "ai": r"\b(ai|machine learning|ml)\b"
+        "ai": r"\b(ai|machine learning|ml)\b",
+        "full stack": r"\b(full stack|full-stack|fullstack)\b"
     }
 
     for role, pattern in role_patterns.items():
@@ -22,7 +23,7 @@ def extract_jd_requirements(jd_text):
     preferred_skills = set()
 
     skill_keywords = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "machine learning", "ml", "react.js", "react", "ai", "artificial intelligence", "api"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "react.js", "react", "api"
     ]
 
     # Split JD into sections
@@ -59,6 +60,14 @@ def extract_jd_requirements(jd_text):
             if skill in token2:
                 preferred_skills.add(skill)
 
+    domain_skills = set()
+
+    if "machine learning" in jd_text or "ml" in jd_text:
+        domain_skills.add("machine learning")
+
+    if "ai" in jd_text or "artificial intelligence" in jd_text:
+        domain_skills.add("artificial intelligence")
+
     role = detect_role(jd_text)
 
     # fallback if role not explicitly found
@@ -80,6 +89,7 @@ def extract_jd_requirements(jd_text):
     return {
         "required_skills": list(required_skills),
         "preferred_skills": list(preferred_skills),
+        "domain_skills": list(domain_skills),
         "raw_text": jd_text,
         "role": role
     }

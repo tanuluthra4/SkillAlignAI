@@ -15,6 +15,7 @@ def resume_agent(resume_text):
     return {
         "raw_text": resume_text,
         "skills": parsed.get("skills", []),
+        "domain_skills": parsed.get("domain_skills", []),
         "projects": parsed.get("projects", []),
         "experience": parsed.get("experience", [])
     }
@@ -26,6 +27,7 @@ def jd_agent(jd_text):
         "raw_text": jd_text,
         "required_skills": analyzed.get("required_skills", []),
         "preferred_skills": analyzed.get("preferred_skills", []),
+        "domain_skills": analyzed.get("domain_skills", []),
         "role": analyzed.get("role", None)
     }
 
@@ -39,8 +41,10 @@ def scoring_agent(resume_data, jd_data):
         "match_score": result.get("match_score", 0),
         "required_match": result.get("required_match", 0),
         "preferred_match": result.get("preferred_match", 0),
+        "domain_match_percentage": result.get("domain_match_percentage", 0),
         "matched_skills": result.get("matched_skills", []),
         "matched_preferred_skills": result.get("matched_preferred_skills", []),
+        "matched_domain_skills": result.get("matched_domain_skills"),
         "missing_skills": result.get("missing_skills", []),
         "missing_preferred_skills": result.get("missing_preferred_skills", []),
         "rejection_report": result.get("rejection_report", []),

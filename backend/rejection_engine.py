@@ -53,6 +53,20 @@ def get_skill_strength(skill, resume_data):
 
     return strength
 
+def compute_domain_alignment(resume_data, jd_data):
+    resume_domains = set(resume_data.get("domain_skills", []))
+    jd_domains = set(jd_data.get("domain_skills", []))
+
+    if not jd_domains:
+        return None, 1.0  # no domain constraint
+    
+    matched_domain_skills = resume_domains & jd_domains
+
+    match = len(matched_domain_skills)
+    total = len(jd_domains)
+
+    return matched_domain_skills, (match / total)
+
 def get_project_relevance(skill, resume_data, jd_data):
     relevance = 1.0
 
@@ -79,9 +93,6 @@ def compute_match_score(resume_data, jd_data):
 
     matched_skills = get_fuzzy_matches(resume_skills, required_skills)
     matched_preferred_skills = get_fuzzy_matches(resume_skills, preferred_skills)
-
-    REQUIRED_WEIGHT = 0.8
-    PREFERRED_WEIGHT = 0.2
 
     total_required_weight = sum(
         get_weight(s, role)
@@ -122,16 +133,24 @@ def compute_match_score(resume_data, jd_data):
     else:
         preferred_match = 1
 
-    match_score = (REQUIRED_WEIGHT * required_match) + (PREFERRED_WEIGHT * preferred_match)
+    matched_domain_skills, domain_match = compute_domain_alignment(resume_data, jd_data)
+
+    base_score = (
+        0.8 * required_match + 
+        0.2 * preferred_match
+    )
+
+    match_score = base_score * (0.7 + 0.3 * domain_match)
 
     required_match_percentage = int(required_match * 100)
     preferred_match_percentage = int(preferred_match * 100)
     match_percentage = int(match_score * 100)
 
     score_explanation = {
-        "formula": "0.8 * required_match + 0.2 * preferred_match",
+        "formula": "0.75 * required_match + 0.15 * preferred_match + 0.1 * domain_match",
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
+        "domain_match_percentage": int(domain_match * 100),
         "final_score": match_percentage
     }
 
@@ -142,8 +161,10 @@ def compute_match_score(resume_data, jd_data):
         "match_score": match_percentage,
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
+        "domain_match_percentage": int(domain_match * 100),
         "matched_skills": list(matched_skills),
         "matched_preferred_skills": list(matched_preferred_skills),
+        "matched_domain_skills": list(matched_domain_skills),
         "missing_skills": missing_skills,
         "missing_preferred_skills": missing_preferred_skills,
         "score_explanation": score_explanation
