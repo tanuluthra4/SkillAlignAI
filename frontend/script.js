@@ -319,8 +319,12 @@ function displayResult(data) {
     // Scores
     requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
     preferredScore.textContent = (data.preferred_match_percentage ?? 0) + "%";
+
+    const domain = data.domain_match_percentage;
+
     document.getElementById("domainScore").textContent =
-        (data.domain_match_percentage ?? 0) + "%";
+        domain !== "N/A" ? domain + "%" : "N/A";
+
     finalScore.textContent = (data.match_percentage ?? data.match_score ?? 0) + "%";
 
     breakdownBox.innerHTML = `

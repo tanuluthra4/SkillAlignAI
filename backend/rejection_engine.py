@@ -3,6 +3,7 @@ from backend.fallback_explainer import generate_fallback_summary
 from backend.utils.normalizer import normalize_skills, is_similar
 from backend.utils.skill_weights import SKILL_WEIGHTS
 from backend.utils.skill_categories import SKILL_CATEGORIES
+from backend.utils.skill_map import expand_skills
 
 def get_weight(skill, role=None): 
     base_weight = SKILL_WEIGHTS.get(skill, 0.6) # default weight
@@ -58,7 +59,7 @@ def compute_domain_alignment(resume_data, jd_data):
     jd_domains = set(jd_data.get("domain_skills", []))
 
     if not jd_domains:
-        return None, 1.0  # no domain constraint
+        return set(), None  # no domain constraint
     
     matched_domain_skills = resume_domains & jd_domains
 
@@ -85,9 +86,9 @@ def get_project_relevance(skill, resume_data, jd_data):
     return min(relevance, 2.0)
 
 def compute_match_score(resume_data, jd_data): 
-    resume_skills = set(normalize_skills(resume_data.get("skills", [])))
-    required_skills = set(normalize_skills(jd_data.get("required_skills", [])))
-    preferred_skills = set(normalize_skills(jd_data.get("preferred_skills", [])))
+    resume_skills = set(expand_skills(normalize_skills(resume_data.get("skills", []))))
+    required_skills = set(expand_skills(normalize_skills(jd_data.get("required_skills", []))))
+    preferred_skills = set(expand_skills(normalize_skills(jd_data.get("preferred_skills", []))))
 
     role = jd_data.get("role", None)
 
@@ -140,17 +141,25 @@ def compute_match_score(resume_data, jd_data):
         0.2 * preferred_match
     )
 
-    match_score = base_score * (0.7 + 0.3 * domain_match)
+    if domain_match is not None:
+        match_score = base_score * (0.7 + 0.3 * domain_match)
+    else:
+        match_score = base_score
 
     required_match_percentage = int(required_match * 100)
     preferred_match_percentage = int(preferred_match * 100)
     match_percentage = int(match_score * 100)
 
+    if domain_match is not None:
+        domain_match_percentage = int(domain_match * 100)
+    else:
+        domain_match_percentage = "N/A"
+
     score_explanation = {
         "formula": "0.75 * required_match + 0.15 * preferred_match + 0.1 * domain_match",
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
-        "domain_match_percentage": int(domain_match * 100),
+        "domain_match_percentage": domain_match_percentage,
         "final_score": match_percentage
     }
 
@@ -161,7 +170,7 @@ def compute_match_score(resume_data, jd_data):
         "match_score": match_percentage,
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
-        "domain_match_percentage": int(domain_match * 100),
+        "domain_match_percentage": domain_match_percentage,
         "matched_skills": list(matched_skills),
         "matched_preferred_skills": list(matched_preferred_skills),
         "matched_domain_skills": list(matched_domain_skills),
