@@ -2,9 +2,23 @@ from backend.rejection_report import build_rejection_report
 from backend.fallback_explainer import generate_fallback_summary
 from backend.utils.normalizer import normalize_skills, is_similar
 from backend.utils.skill_weights import SKILL_WEIGHTS
+from backend.utils.skill_categories import SKILL_CATEGORIES
 
-def get_weight(skill): 
-    return SKILL_WEIGHTS.get(skill, 0.6) # default weight
+def get_weight(skill, role=None): 
+    base_weight = SKILL_WEIGHTS.get(skill, 0.6) # default weight
+
+    multiplier = 1.0
+
+    if role:
+        for category, skills in SKILL_CATEGORIES.items():
+            if skill in skills:
+                if role == category:
+                    multiplier *= 1.5  # boost relevant skills
+            
+                else:
+                    multiplier *= 0.7 # penalize irrelevant
+        
+    return base_weight * multiplier
 
 def get_fuzzy_matches(resume_skills, jd_skills):
     matched = set()
@@ -22,17 +36,19 @@ def compute_match_score(resume_data, jd_data):
     required_skills = set(normalize_skills(jd_data.get("required_skills", [])))
     preferred_skills = set(normalize_skills(jd_data.get("preferred_skills", [])))
 
+    role = jd_data.get("role", None)
+
     matched_skills = get_fuzzy_matches(resume_skills, required_skills)
     matched_preferred_skills = get_fuzzy_matches(resume_skills, preferred_skills)
 
     REQUIRED_WEIGHT = 0.8
     PREFERRED_WEIGHT = 0.2
 
-    total_required_weight = sum(get_weight(s) for s in required_skills)
-    matched_required_weight = sum(get_weight(s) for s in matched_skills)
+    total_required_weight = sum(get_weight(s, role) for s in required_skills)
+    matched_required_weight = sum(get_weight(s, role) for s in matched_skills)
 
-    total_preferred_weight = sum(get_weight(s) for s in preferred_skills)
-    matched_preferred_weight = sum(get_weight(s) for s in matched_preferred_skills)
+    total_preferred_weight = sum(get_weight(s, role) for s in preferred_skills)
+    matched_preferred_weight = sum(get_weight(s, role) for s in matched_preferred_skills)
 
     required_match = 0
     preferred_match = 0

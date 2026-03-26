@@ -4,8 +4,14 @@ from backend.utils.role_map import ROLE_SKILL_MAP
 def detect_role(jd_text):
     jd_text = jd_text.lower()
 
-    for role in ROLE_SKILL_MAP:
-        if role in jd_text:
+    role_patterns = {
+        "frontend": r"\b(frontend|front-end)\b",
+        "backend": r"\b(backend|back-end)\b",
+        "ai": r"\b(ai|machine learning|ml)\b"
+    }
+
+    for role, pattern in role_patterns.items():
+        if re.search(pattern, jd_text):
             return role
         
     return None
@@ -62,5 +68,6 @@ def extract_jd_requirements(jd_text):
     return {
         "required_skills": list(required_skills),
         "preferred_skills": list(preferred_skills),
-        "raw_text": jd_text
+        "raw_text": jd_text,
+        "role": role
     }

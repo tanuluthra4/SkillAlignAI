@@ -19,13 +19,14 @@ def resume_agent(resume_text):
         "experience": parsed.get("experience", [])
     }
 
-def jd_agent(jd_text, resume_text):
+def jd_agent(jd_text):
     analyzed = extract_jd_requirements(jd_text)
 
     return {
         "raw_text": jd_text,
         "required_skills": analyzed.get("required_skills", []),
-        "preferred_skills": analyzed.get("preferred_skills", [])
+        "preferred_skills": analyzed.get("preferred_skills", []),
+        "role": analyzed.get("role", None)
     }
 
 def scoring_agent(resume_data, jd_data):

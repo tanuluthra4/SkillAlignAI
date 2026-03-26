@@ -21,7 +21,7 @@ def run_pipeline(resume_text, jd_text):
         })
         
         # 2. JD Agent 
-        jd_data = jd_agent(jd_text, resume_text)
+        jd_data = jd_agent(jd_text)
         agent_trace.append({
             "agent": "JDAgent",
             "output": jd_data
