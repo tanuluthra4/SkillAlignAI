@@ -53,6 +53,23 @@ def get_skill_strength(skill, resume_data):
 
     return strength
 
+def get_project_relevance(skill, resume_data, jd_data):
+    relevance = 1.0
+
+    projects = resume_data.get("projects", [])
+    jd_skills = jd_data.get("required_skills", [])
+
+    for project in projects:
+        if skill in project:
+            match_count = sum(1 for jd_skill in jd_skills if jd_skill in project)
+
+            if match_count > 0:
+                relevance *= (1+ 0.2 * match_count) # scalable boost
+            else:
+                relevance *= 1.1 # weak relevance
+
+    return min(relevance, 2.0)
+
 def compute_match_score(resume_data, jd_data): 
     resume_skills = set(normalize_skills(resume_data.get("skills", [])))
     required_skills = set(normalize_skills(jd_data.get("required_skills", [])))
@@ -67,20 +84,28 @@ def compute_match_score(resume_data, jd_data):
     PREFERRED_WEIGHT = 0.2
 
     total_required_weight = sum(
-        get_weight(s, role) * get_skill_strength(s, resume_data)
+        get_weight(s, role)
+        * get_skill_strength(s, resume_data)
+        * get_project_relevance(s, resume_data, jd_data)
         for s in required_skills
     )
     matched_required_weight = sum(
-        get_weight(s, role) * get_skill_strength(s, resume_data)
+        get_weight(s, role) 
+        * get_skill_strength(s, resume_data)
+        * get_project_relevance(s, resume_data, jd_data)
         for s in matched_skills
     )
 
     total_preferred_weight = sum(
-        get_weight(s, role) * get_skill_strength(s, resume_data) 
+        get_weight(s, role) 
+        * get_skill_strength(s, resume_data) 
+        * get_project_relevance(s, resume_data, jd_data)
         for s in preferred_skills
     )
     matched_preferred_weight = sum(
-        get_weight(s, role) *get_skill_strength(s, resume_data)
+        get_weight(s, role) 
+        * get_skill_strength(s, resume_data)
+        * get_project_relevance(s, resume_data, jd_data)
         for s in matched_preferred_skills
     )
 

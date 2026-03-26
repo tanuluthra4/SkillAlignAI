@@ -24,7 +24,7 @@ def extract_resume_info(resume_text):
 
     # Project Detection 
     project_matches = re.findall(r'(project|built|developed)(.*)', resume_text)
-    projects = [match[1] for match in project_matches]
+    projects = [match[1].strip() for match in project_matches]
 
     # Experience Detection 
     exp_matches = re.findall(r'(intern|experience|worked)(.*)', resume_text)
