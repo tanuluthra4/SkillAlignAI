@@ -8,6 +8,17 @@ const BASE_URL =
         ? "http://127.0.0.1:5000"
         : "https://skillalignai.onrender.com";
 
+const fileInput = document.getElementById("resumeFile");
+const fileName = document.getElementById("fileName");
+
+if (fileInput && fileName) {
+    fileInput.addEventListener("change", function () {
+        fileName.textContent = this.files[0]
+            ? this.files[0].name
+            : "No file selected";
+    });
+}
+
 analyzeBtn.addEventListener("click", async function () {
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
@@ -15,10 +26,20 @@ analyzeBtn.addEventListener("click", async function () {
 
     document.getElementById("reportList").innerHTML = "";
     document.getElementById("explanation").textContent = "";
-    document.getElementById("auditTrail").innerHTML = "";
+    const auditTrailEl = document.getElementById("auditTrail");
+    if (auditTrailEl) {
+        auditTrailEl.innerHTML = "";
+    }
+
+    setTimeout(() => {
+        document.getElementById("result").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }, 100);
+
     document.getElementById("result").style.opacity = "0.2";
     document.getElementById("loaderOverlay").classList.remove("hidden");
-    document.getElementById("decisionBox").textContent = "Analyzing... ";
 
     try {
         if (resumeFile) {
@@ -50,19 +71,18 @@ analyzeBtn.addEventListener("click", async function () {
         if (!response.ok) {
             document.getElementById("loaderOverlay").classList.add("hidden");
             document.getElementById("result").style.opacity = "1";
-            document.getElementById("decisionBox").textContent = data.error || "Something went wrong";
-
-            document.getElementById("decisionBox").className = "card decision-box decision-reject";
 
             const auditTrail = document.getElementById("auditTrail");
-            auditTrail.innerHTML = "";
 
-            (data.audit_trail || []).forEach(step => {
-                const li = document.createElement("li");
-                li.textContent = step;
-                auditTrail.appendChild(li);
-            });
+            if (auditTrail) {
+                auditTrail.innerHTML = "";
 
+                (data.audit_trail || []).forEach(step => {
+                    const li = document.createElement("li");
+                    li.textContent = step;
+                    auditTrail.appendChild(li);
+                });
+            }
             return;
         }
 
@@ -84,11 +104,8 @@ analyzeBtn.addEventListener("click", async function () {
     } catch (error) {
         document.getElementById("loaderOverlay").classList.add("hidden");
         document.getElementById("result").style.opacity = "1";
-        const decisionBox = document.getElementById("decisionBox");
 
         console.error(error)
-        decisionBox.textContent = "Error: " + error.message;
-        decisionBox.className = "card decision-box decision-reject";
 
         return;
     }
@@ -259,6 +276,10 @@ document.getElementById("compareBtn").onclick = function () {
 
         table.appendChild(row);
     });
+
+    document.getElementById("comparisonTable").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 document.getElementById("clearCandidates").onclick = function () {
@@ -281,7 +302,12 @@ function renderTags(containerId, items) {
 }
 
 function displayResult(data) {
-    const decisionBox = document.getElementById("decisionBox");
+    const heroScore = document.getElementById("heroScore");
+    const heroDecision = document.getElementById("heroDecision");
+    const heroIssue = document.getElementById("heroIssue");
+    const heroStrength = document.getElementById("heroStrength");
+    const heroMissing = document.getElementById("heroMissing");
+
     const breakdownBox = document.getElementById("scoreBreakdown");
     const requiredScore = document.getElementById("requiredScore");
     const preferredScore = document.getElementById("preferredScore");
@@ -293,7 +319,6 @@ function displayResult(data) {
     const impactBox = document.getElementById("impactMetrics");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
-    const reportPreview = document.getElementById("reportPreview");
 
     data.matched_skills = data.matched_skills || [];
     data.missing_skills = data.missing_skills || [];
@@ -301,24 +326,56 @@ function displayResult(data) {
 
     window.latestData = data;
 
-    // Decision 
-    decisionBox.className = "card decision-box";
+    // Score
+    heroScore.textContent = (data.match_percentage ?? 0) + "%";
+
+    // Decision badge color
+    heroDecision.textContent = data.decision;
+
+    heroDecision.className = "badge";
+    if (data.decision === "Strong Fit") {
+        heroDecision.classList.add("green");
+    } else if (data.decision === "Borderline") {
+        heroDecision.classList.add("yellow");
+    } else {
+        heroDecision.classList.add("red");
+    }
+
+    // Primary Issue (from failure analysis)
+    heroIssue.textContent =
+        data.failure_analysis?.primary_reason || "Not specified";
+
+    // Strength (top 2 matched skills)
+    heroStrength.textContent =
+        data.matched_skills?.slice(0, 2).join(", ") || "None";
+
+    // Missing (top 2 gaps)
+    heroMissing.textContent =
+        data.missing_skills?.slice(0, 2).join(", ") || "None";
+
+    const verdictLine = document.getElementById("verdictLine");
+
+    if (verdictLine) {
+        const reason = data.failure_analysis?.primary_reason || "key skill gaps";
+        const strength = data.matched_skills?.[0] || "relevant skills";
+
+        verdictLine.textContent =
+            `💡 Verdict: Candidate ${data.decision.toLowerCase()} due to ${reason}, despite strength in ${strength}.`;
+    }
 
     if (data.decision === "Strong Fit") {
-        decisionBox.classList.add("decision-strong");
+        verdictLine.style.borderLeftColor = "#22c55e";
     }
     else if (data.decision === "Borderline") {
-        decisionBox.classList.add("decision-borderline");
+        verdictLine.style.borderLeftColor = "#f59e0b";
     }
     else {
-        decisionBox.classList.add("decision-reject");
+        verdictLine.style.borderLeftColor = "#ef4444";
     }
-
-    decisionBox.textContent = data.decision;
 
     // Scores
     requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
-    
+
     const pref = data.preferred_match_percentage
     preferredScore.textContent = pref !== "N/A" ? pref + "%" : "N/A";
 
@@ -329,10 +386,12 @@ function displayResult(data) {
 
     finalScore.textContent = (data.match_percentage ?? data.match_score ?? 0) + "%";
 
-    breakdownBox.innerHTML = `
+    if (breakdownBox) {
+        breakdownBox.innerHTML = `
         <li><strong>Base:</strong> 0.8 × required + 0.2 × preferred</li>
         <li><strong>Final:</strong> Base × (0.7 + 0.3 × domain)</li>
     `;
+    }
 
     // Matched Skills 
     renderTags("matchedRequired", data.matched_skills);
@@ -341,17 +400,20 @@ function displayResult(data) {
     // Missing Skills 
     renderTags("missingRequired", data.missing_skills);
     renderTags("missingPreferred", data.missing_preferred_skills);
-
-    renderTags("domainSkills", data.matched_domain_skills);
+    if (document.getElementById("domainSkills")) {
+        renderTags("domainSkills", data.matched_domain_skills);
+    }
 
     // Report 
-    reportList.innerHTML = "";
-    if (data.rejection_report && data.rejection_report.length) {
-        data.rejection_report.forEach(r => {
-            const li = document.createElement("li");
-            li.textContent = `${r.reason} (Severity: ${r.severity})`;
-            reportList.appendChild(li);
-        });
+    if (reportList) {
+        reportList.innerHTML = "";
+        if (data.rejection_report && data.rejection_report.length) {
+            data.rejection_report.forEach(r => {
+                const li = document.createElement("li");
+                li.textContent = `${r.reason} (Severity: ${r.severity})`;
+                reportList.appendChild(li);
+            });
+        }
     }
 
     if (failureAnalysisDiv && data.failure_analysis) {
@@ -371,36 +433,45 @@ function displayResult(data) {
         `;
     }
 
-    impactBox.innerHTML = "";
-    if (data.impact_metrics) {
-        const im = data.impact_metrics;
+    if (impactBox) {
 
-        const risk = im.risk_level;
+        impactBox.innerHTML = "";
+        if (data.impact_metrics) {
+            const im = data.impact_metrics;
 
-        let color = '#2ecc71'; // low
+            const risk = im.risk_level;
 
-        if (risk == "Medium") color = "#f1c40f";
-        if (risk == "High") color = "#e74c3c";
+            let color = '#2ecc71'; // low
 
-        impactBox.innerHTML = `
+            if (risk == "Medium") color = "#f1c40f";
+            if (risk == "High") color = "#e74c3c";
+
+            impactBox.innerHTML = `
             <p><strong>Hire Probability: </strong> ${im.hire_probability}</p>
             <p><strong>Resume Strength: </strong> ${im.resume_strength}</p>
             <p><strong>Risk Level: </strong> <span style="color:${color}; font-weight:bold;"> ${risk}</span></p>
         `;
+        }
     }
 
-    suggestions.textContent = data.improvement_suggestions?.length ? data.improvement_suggestions.join(", ") : "None";
+    suggestions.innerHTML = (data.improvement_suggestions || [])
+        .map(s => `<li>${s}</li>`)
+        .join("") || "<li>No suggestions</li>";
 
-    // Explantion 
+    // Explantion
+    const shortExplanation = data.rejection_summary
+        ? data.rejection_summary.split(". ").slice(0, 2).join(". ") + "."
+        : "No explanation available";
+
     if (explanation) {
         const isFallback = data.rejection_summary?.includes("[High]") || data.rejection_summary?.includes("[Medium]") || data.rejection_summary?.includes("[Low]");
 
         if (!isFallback) {
             explanation.innerHTML = `
-                <div class="card">
-                    <div class="section-title">AI Explanation</div>
-                    <p>${data.rejection_summary}</p>
-                </div>
+            <div class="card">
+                <h3>🧠 Why Rejected</h3>
+                <p>${shortExplanation}</p>
+            </div>
             `;
         } else {
             explanation.innerHTML = "";
@@ -408,39 +479,24 @@ function displayResult(data) {
     }
 
     // Audit Trail 
-    auditTrail.innerHTML = "";
+    if (auditTrail) {
+        auditTrail.innerHTML = "";
 
-    if (data.agent_trace && data.agent_trace.length) {
-        data.agent_trace.forEach(step => {
-            const li = document.createElement("li");
-            li.textContent = `${step.agent} -> executed`;
-            auditTrail.appendChild(li);
-            console.log(step.output)
-        });
+        if (data.agent_trace && data.agent_trace.length) {
+            data.agent_trace.forEach(step => {
+                const li = document.createElement("li");
+                li.textContent = `${step.agent} -> executed`;
+                auditTrail.appendChild(li);
+                console.log(step.output)
+            });
+        }
+        else if (data.audit_trail) {
+            data.audit_trail.forEach(step => {
+                const li = document.createElement("li");
+                li.textContent = step;
+                auditTrail.appendChild(li);
+            });
+        }
     }
-    else if (data.audit_trail) {
-        data.audit_trail.forEach(step => {
-            const li = document.createElement("li");
-            li.textContent = step;
-            auditTrail.appendChild(li);
-        });
-    }
 
-    if (reportPreview) {
-        reportPreview.innerHTML = `
-        <div class="card">
-
-            <p><strong>Decision:</strong> ${data.decision}</p>
-            <p><strong>Match Score:</strong> ${data.match_percentage}%</p>
-
-            <p><strong>Key Gaps:</strong> ${data.missing_skills.length || data.missing_preferred_skills.length
-                ? [...data.missing_skills, ...data.missing_preferred_skills].join(", ")
-                : "None"
-            }</p>
-
-            <p><strong>Summary:</strong></p>
-            <p>${data.rejection_summary || "No summary available"}</p>
-        </div>
-        `;
-    }
 }
