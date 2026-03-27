@@ -23,7 +23,7 @@ def extract_jd_requirements(jd_text):
     preferred_skills = set()
 
     skill_keywords = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql", "pandas", "deep learning"
     ]
 
     # Split JD into sections
@@ -82,9 +82,9 @@ def extract_jd_requirements(jd_text):
         elif "machine learning" in required_skills or "ai" in required_skills:
             role = "ai"
 
-    if role and len(required_skills) == 0:
+    if role and len(required_skills) < 2:
         role_skills = ROLE_SKILL_MAP.get(role, [])
-        required_skills.update(role_skills)
+        required_skills = required_skills.union(role_skills[:2])
 
     return {
         "required_skills": list(required_skills),

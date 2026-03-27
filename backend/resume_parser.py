@@ -1,5 +1,5 @@
 import re
-from backend.utils.normalizer import is_similar
+from backend.utils.normalizer import is_similar, normalize_skills
 
 def extract_resume_info(resume_text):
     resume_text = resume_text.lower()
@@ -9,7 +9,7 @@ def extract_resume_info(resume_text):
     experience = []
 
     common_skills = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "html", "css", "data structures", "rest api", "algorithms", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "html", "css", "data structures", "rest api", "algorithms", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql", "pandas", "deep learning"
     ]
 
     # Skill detection
@@ -24,13 +24,22 @@ def extract_resume_info(resume_text):
                 if is_similar(token, skill):
                     skills.add(skill)
     
-    domain_skills = []
+    DOMAIN_SKILLS = [
+        "ml", "machine learning", "ai", "artificial intelligence"
+    ]
+    
+    domain_skills = set()
 
-    if "machine learning" in resume_text or "ml" in resume_text:
-        domain_skills.append("machine learning")
-
-    if "ai" in resume_text or "artificial intelligence" in resume_text:
-        domain_skills.append("artificial intelligence")
+    for skill in DOMAIN_SKILLS:
+        if " " in skill:
+            if skill in resume_text:
+                domain_skills.add(skill)
+        else:
+            for token in tokens:
+                if is_similar(token, skill):
+                    domain_skills.add(skill)
+    
+    domain_skills = normalize_skills(list(domain_skills))
 
     # Project Detection 
     project_matches = re.findall(r'(project|built|developed)(.*)', resume_text)

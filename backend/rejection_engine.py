@@ -138,7 +138,7 @@ def compute_match_score(resume_data, jd_data):
             # fuzzy fallback (weakest signal)
             if jd_skill not in matched_skills:
                 for resume_skill in resume_skills:
-                    if get_fuzzy_matches(resume_skill, jd_skill) > 0.8:
+                    if is_similar(resume_skill, jd_skill) > 0.8:
                         matched_skills.add(jd_skill)
 
                         # low confidence
@@ -184,7 +184,7 @@ def compute_match_score(resume_data, jd_data):
                 # fuzzy fallback (weakest signal)
                 if jd_skill not in matched_preferred_skills:
                     for resume_skill in resume_skills:
-                        if get_fuzzy_matches(resume_skill, jd_skill) > 0.8:
+                        if is_similar(resume_skill, jd_skill) > 0.8:
                             matched_preferred_skills.add(jd_skill)
 
                             # low confidence
@@ -210,7 +210,7 @@ def compute_match_score(resume_data, jd_data):
 
     total_preferred_weight = sum(
         get_weight(s, role) 
-        * resume_skill_map.get(s, 0)
+        * 1.0
         * get_skill_strength(s, resume_data) 
         * get_project_relevance(s, resume_data, jd_data)
         for s in preferred_skills
@@ -249,6 +249,9 @@ def compute_match_score(resume_data, jd_data):
         match_score = base_score * (0.7 + 0.3 * domain_match)
     else:
         match_score = base_score
+
+    if required_match == 0 and domain_match > 0:
+        match_score = 0.1 * domain_match
 
     required_match_percentage = int(required_match * 100)
     
