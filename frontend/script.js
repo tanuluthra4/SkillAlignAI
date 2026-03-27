@@ -318,7 +318,9 @@ function displayResult(data) {
 
     // Scores
     requiredScore.textContent = (data.required_match_percentage ?? 0) + "%";
-    preferredScore.textContent = (data.preferred_match_percentage ?? 0) + "%";
+    
+    const pref = data.preferred_match_percentage
+    preferredScore.textContent = pref !== "N/A" ? pref + "%" : "N/A";
 
     const domain = data.domain_match_percentage;
 

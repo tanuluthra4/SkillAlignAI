@@ -3,7 +3,7 @@ from backend.fallback_explainer import generate_fallback_summary
 from backend.utils.normalizer import normalize_skills, is_similar
 from backend.utils.skill_weights import SKILL_WEIGHTS
 from backend.utils.skill_categories import SKILL_CATEGORIES
-from backend.utils.skill_map import expand_skills
+from backend.utils.skill_map import expand_skills_with_confidence, REVERSE_SEMANTIC_MAP, SEMANTIC_SKILL_MAP
 
 def get_weight(skill, role=None): 
     base_weight = SKILL_WEIGHTS.get(skill, 0.6) # default weight
@@ -86,23 +86,123 @@ def get_project_relevance(skill, resume_data, jd_data):
     return min(relevance, 2.0)
 
 def compute_match_score(resume_data, jd_data): 
-    resume_skills = set(expand_skills(normalize_skills(resume_data.get("skills", []))))
-    required_skills = set(expand_skills(normalize_skills(jd_data.get("required_skills", []))))
-    preferred_skills = set(expand_skills(normalize_skills(jd_data.get("preferred_skills", []))))
+    resume_skill_map = expand_skills_with_confidence(
+        normalize_skills(resume_data.get("skills", []))
+    )
+    resume_skills = set(resume_skill_map.keys())
+
+    required_skills = set(
+        normalize_skills(jd_data.get("required_skills", []))
+    )
+
+    preferred_skills = set(
+        normalize_skills(jd_data.get("preferred_skills", []))
+    )
 
     role = jd_data.get("role", None)
 
-    matched_skills = get_fuzzy_matches(resume_skills, required_skills)
-    matched_preferred_skills = get_fuzzy_matches(resume_skills, preferred_skills)
+    matched_skills = set()
+
+    for jd_skill in required_skills:
+
+        # direct match
+        if jd_skill in resume_skills:
+            matched_skills.add(jd_skill)
+
+        else:
+            # reverse transfer check
+            reverse = REVERSE_SEMANTIC_MAP.get(jd_skill)
+
+            if reverse:
+                parent_skill, confidence = reverse
+
+                if parent_skill in resume_skills:
+                    matched_skills.add(jd_skill)
+
+                    # inject confidence for scoring
+                    resume_skill_map[jd_skill] = confidence
+
+            # sibling transfer check
+            for parent, children in SEMANTIC_SKILL_MAP.items():
+                if jd_skill in children:
+                    for resume_skill in resume_skills:
+                        if resume_skill in children:
+                            matched_skills.add(jd_skill)
+
+                            # assign sibling confidence
+                            resume_skill_map[jd_skill] = max(
+                                resume_skill_map.get(jd_skill, 0),
+                                0.5   # sibling strength
+                            )
+
+            # fuzzy fallback (weakest signal)
+            if jd_skill not in matched_skills:
+                for resume_skill in resume_skills:
+                    if get_fuzzy_matches(resume_skill, jd_skill) > 0.8:
+                        matched_skills.add(jd_skill)
+
+                        # low confidence
+                        resume_skill_map[jd_skill] = max(
+                            resume_skill_map.get(jd_skill, 0),
+                            0.3   # weakest confidence
+                        )
+
+    matched_preferred_skills = set()
+
+    for jd_skill in preferred_skills:
+
+        # direct match
+        if jd_skill in resume_skills:
+            matched_preferred_skills.add(jd_skill)
+
+        else:
+            # reverse transfer check
+            reverse = REVERSE_SEMANTIC_MAP.get(jd_skill)
+
+            if reverse:
+                parent_skill, confidence = reverse
+
+                if parent_skill in resume_skills:
+                    matched_preferred_skills.add(jd_skill)
+
+                    # inject confidence for scoring
+                    resume_skill_map[jd_skill] = confidence
+
+            # sibling transfer check
+            for parent, children in SEMANTIC_SKILL_MAP.items():
+                if jd_skill in children:
+                    for resume_skill in resume_skills:
+                        if resume_skill in children:
+                            matched_preferred_skills.add(jd_skill)
+
+                            # assign sibling confidence
+                            resume_skill_map[jd_skill] = max(
+                                resume_skill_map.get(jd_skill, 0),
+                                0.5   # sibling strength
+                            )
+                
+                # fuzzy fallback (weakest signal)
+                if jd_skill not in matched_preferred_skills:
+                    for resume_skill in resume_skills:
+                        if get_fuzzy_matches(resume_skill, jd_skill) > 0.8:
+                            matched_preferred_skills.add(jd_skill)
+
+                            # low confidence
+                            resume_skill_map[jd_skill] = max(
+                                resume_skill_map.get(jd_skill, 0),
+                                0.3   # weakest confidence
+                            )
 
     total_required_weight = sum(
         get_weight(s, role)
+        * 1.0
         * get_skill_strength(s, resume_data)
         * get_project_relevance(s, resume_data, jd_data)
         for s in required_skills
     )
     matched_required_weight = sum(
         get_weight(s, role) 
+        * resume_skill_map.get(s, 0)
         * get_skill_strength(s, resume_data)
         * get_project_relevance(s, resume_data, jd_data)
         for s in matched_skills
@@ -110,6 +210,7 @@ def compute_match_score(resume_data, jd_data):
 
     total_preferred_weight = sum(
         get_weight(s, role) 
+        * resume_skill_map.get(s, 0)
         * get_skill_strength(s, resume_data) 
         * get_project_relevance(s, resume_data, jd_data)
         for s in preferred_skills
@@ -122,7 +223,7 @@ def compute_match_score(resume_data, jd_data):
     )
 
     required_match = 0
-    preferred_match = 0
+    preferred_match = None
 
     if required_skills:
         required_match = matched_required_weight / total_required_weight
@@ -132,14 +233,17 @@ def compute_match_score(resume_data, jd_data):
     if preferred_skills:
         preferred_match = matched_preferred_weight / total_preferred_weight
     else:
-        preferred_match = 1
+        preferred_match = None
 
     matched_domain_skills, domain_match = compute_domain_alignment(resume_data, jd_data)
 
-    base_score = (
-        0.8 * required_match + 
-        0.2 * preferred_match
-    )
+    if preferred_match is not None:
+        base_score = (
+            0.8 * required_match + 
+            0.2 * preferred_match
+        )
+    else:
+        base_score = required_match
 
     if domain_match is not None:
         match_score = base_score * (0.7 + 0.3 * domain_match)
@@ -147,7 +251,11 @@ def compute_match_score(resume_data, jd_data):
         match_score = base_score
 
     required_match_percentage = int(required_match * 100)
-    preferred_match_percentage = int(preferred_match * 100)
+    
+    if preferred_match is not None:
+        preferred_match_percentage = int(preferred_match * 100)
+    else:
+        preferred_match_percentage = "N/A"
     match_percentage = int(match_score * 100)
 
     if domain_match is not None:
@@ -156,7 +264,7 @@ def compute_match_score(resume_data, jd_data):
         domain_match_percentage = "N/A"
 
     score_explanation = {
-        "formula": "0.75 * required_match + 0.15 * preferred_match + 0.1 * domain_match",
+        "formula": "Base: 0.8 × required + 0.2 × preferred\nFinal: Base × (0.7 + 0.3 × domain)",
         "required_match": required_match_percentage,
         "preferred_match": preferred_match_percentage,
         "domain_match_percentage": domain_match_percentage,

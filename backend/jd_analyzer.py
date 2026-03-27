@@ -23,7 +23,7 @@ def extract_jd_requirements(jd_text):
     preferred_skills = set()
 
     skill_keywords = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "react.js", "react", "api"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs",  "html", "javascript", "rest api", "data structures", "algorithms", "docker", "css", "c", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql"
     ]
 
     # Split JD into sections

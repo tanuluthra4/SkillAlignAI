@@ -1,4 +1,5 @@
 import re
+from backend.utils.normalizer import is_similar
 
 def extract_resume_info(resume_text):
     resume_text = resume_text.lower()
@@ -8,7 +9,7 @@ def extract_resume_info(resume_text):
     experience = []
 
     common_skills = [
-        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "html", "css", "data structures", "rest api", "algorithms", "react.js", "react", "api"
+        "python", "py", "java", "c++", "sql", "flask", "node", "nodejs", "docker", "c", "javascript", "html", "css", "data structures", "rest api", "algorithms", "react.js", "react", "api", "django", "fast api", "express", "tensorflow", "pytorch", "scikit-learn", "mysql", "postgresql"
     ]
 
     # Skill detection
@@ -19,8 +20,9 @@ def extract_resume_info(resume_text):
             if skill in resume_text:
                 skills.add(skill)
         else:
-            if skill in tokens:
-                skills.add(skill)
+            for token in tokens:
+                if is_similar(token, skill):
+                    skills.add(skill)
     
     domain_skills = []
 

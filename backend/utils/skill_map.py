@@ -5,23 +5,37 @@ SEMANTIC_SKILL_MAP = {
     "sql": ["mysql", "postgresql"],
 }
 
-def expand_skills(skills):
+REVERSE_SEMANTIC_MAP = {
+    "flask": ("python", 0.4),
+    "django": ("python", 0.4),
+    "fastapi": ("python", 0.4),
+    "react": ("javascript", 0.4),
+    "node": ("javascript", 0.4), 
+    "express": ("javascript", 0.4),
+    "tensorflow": ("machine learning", 0.4),
+    "pytorch": ("machine learning", 0.4),
+    "scikit-learn": ("machine learning", 0.4),
+    "mysql": ("sql", 0.4),
+    "postgresql": ("sql", 0.4)
+}
+
+def expand_skills_with_confidence(skills):
     if not skills:
-        return []
+        return {}
     
-    expanded = set()
+    expanded = {}
 
     for skill in skills:
         if not skill:
             continue
 
-        expanded.add(skill)
+        expanded[skill] = 1.0
 
         for parent, children in SEMANTIC_SKILL_MAP.items():
             if not children:
                 continue
             
             if skill in children:
-                expanded.add(parent)
+                expanded[parent] = max(expanded.get(parent, 0), 0.7)
 
-    return list(expanded)
+    return expanded
