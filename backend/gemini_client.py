@@ -41,4 +41,8 @@ Output Format:
 """
     
     response = model.generate_content(prompt)
-    return response.text 
+    
+    if not response or not getattr(response, "text", None):
+        return None
+    
+    return response.text

@@ -66,15 +66,23 @@ def decision_agent(score_data):
         "decision": decision
     }
 
-def explanation_agent(score_data, decision_data):
+def explanation_agent(resume_data, jd_data, score_data, decision_data):
     rejection_data = generate_rejection_data(score_data)
-    try: 
+
+    explanation = None
+
+    try:
         explanation = generate_explanation(
-            score_data, 
-            decision_data, 
+            resume_data,
+            jd_data,
             rejection_data["rejection_report"]
         )
-    except Exception:
+
+        if not explanation or not explanation.strip():
+            raise ValueError("Empty AI response")
+
+    except Exception as e:
+        print("AI FAILED:", str(e))
         explanation = generate_fallback_summary(
             rejection_data["rejection_report"]
         )

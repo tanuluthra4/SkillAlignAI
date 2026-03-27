@@ -68,7 +68,7 @@ def run_pipeline(resume_text, jd_text):
         })
 
         # 8. Explanation Agent 
-        explanation_data = explanation_agent(score_data, decision_data)
+        explanation_data = explanation_agent(resume_data, jd_data, score_data, decision_data)
         agent_trace.append({
             "agent": "ExplanationAgent",
             "output": explanation_data
