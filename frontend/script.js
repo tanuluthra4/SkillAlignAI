@@ -23,8 +23,11 @@ analyzeBtn.addEventListener("click", async function () {
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
     const resumeFile = document.getElementById("resumeFile").files[0];
+    const reportList = document.getElementById("reportList")
 
-    document.getElementById("reportList").innerHTML = "";
+    if (reportList) {
+        reportList.innerHTML = "";
+    }
     document.getElementById("explanation").textContent = "";
     const auditTrailEl = document.getElementById("auditTrail");
     if (auditTrailEl) {
@@ -275,6 +278,9 @@ document.getElementById("compareBtn").onclick = function () {
         `;
 
         table.appendChild(row);
+        if (index === 0) {
+            row.classList.add("top-candidate");
+        }
     });
 
     document.getElementById("comparisonTable").scrollIntoView({
@@ -299,6 +305,72 @@ function renderTags(containerId, items) {
     el.innerHTML = items.map(skill =>
         `<span class="tag">${skill}</span>`
     ).join(" ");
+}
+
+document.addEventListener("click", function (e) {
+    if (e.target && e.target.id === "toggleExplain") {
+
+        const full = document.getElementById("fullExplanation");
+
+        if (!full) return;
+
+        if (full.classList.contains("hidden")) {
+            full.classList.remove("hidden");
+            e.target.textContent = "Hide Detailed Explanation";
+        } else {
+            full.classList.add("hidden");
+            e.target.textContent = "Show Detailed Explanation";
+        }
+    }
+});
+
+function formatText(rawText) {
+    if (!rawText) return "<p class='explanation-text'>No explanation available</p>";
+
+    // 🔹 Step 1 — Clean markdown noise
+    const cleanText = rawText
+        .replace(/\*\*/g, "")
+        .replace(/\*/g, "")
+        .replace(/\n+/g, " ")
+        .trim();
+
+    // 🔹 Step 2 — Extract sections using keywords
+    const primaryMatch = cleanText.split(/Primary rejection reason/i)[1] || "";
+    const secondaryMatch = cleanText.split(/Secondary factors/i)[1] || "";
+    const screeningMatch = cleanText.split(/What mattered most/i)[1] || "";
+    const actionMatch = cleanText.split(/How to improve next time/i)[1] || "";
+
+    // 🔹 Step 3 — Helper to convert sentence → list
+    function toList(text) {
+        return text
+            .split(". ")
+            .filter(s => s.trim().length > 0)
+            .map(s => `<li>${s.trim()}.</li>`)
+            .join("");
+    }
+
+    // 🔹 Step 4 — Build structured HTML
+    return `
+        <div class="explain-section">
+            <h4>🚫 Primary Reason</h4>
+            <p>${primaryMatch.split("Secondary factors")[0] || primaryMatch}</p>
+        </div>
+
+        <div class="explain-section">
+            <h4>📉 Supporting Evidence</h4>
+            <ul>${toList(secondaryMatch.split("What mattered most")[0] || secondaryMatch)}</ul>
+        </div>
+
+        <div class="explain-section">
+            <h4>🧠 Screening Insight</h4>
+            <p>${screeningMatch.split("How to improve next time")[0] || screeningMatch}</p>
+        </div>
+
+        <div class="explain-section">
+            <h4>🚀 Action Plan</h4>
+            <ul>${toList(actionMatch)}</ul>
+        </div>
+    `;
 }
 
 function displayResult(data) {
@@ -464,18 +536,19 @@ function displayResult(data) {
         : "No explanation available";
 
     if (explanation) {
-        const isFallback = data.rejection_summary?.includes("[High]") || data.rejection_summary?.includes("[Medium]") || data.rejection_summary?.includes("[Low]");
+        explanation.innerHTML = `
+        <div class="card">
+            <h3>🧠 AI Explanation</h3>
 
-        if (!isFallback) {
-            explanation.innerHTML = `
-            <div class="card">
-                <h3>🧠 Why Rejected</h3>
-                <p>${shortExplanation}</p>
+            <p>${formatText(shortExplanation)}</p>
+
+            <button id="toggleExplain">Show Detailed Explanation</button>
+
+            <div id="fullExplanation" class="hidden">
+                <p>${formatText(data.rejection_summary)}</p>
             </div>
-            `;
-        } else {
-            explanation.innerHTML = "";
-        }
+        </div>
+        `;
     }
 
     // Audit Trail 
