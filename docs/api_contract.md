@@ -1,10 +1,16 @@
-# SkillAlignAI - API Contract 
+# 🚀 SkillAlignAI — API Contract 
 
-## Endpoint  
+## 📌 Overview
+
+SkillAlignAI provides an explainable resume–job matching API that evaluates candidate fit using semantic skill matching, weighted scoring, and AI-generated feedback.
+
+## 🔗 Endpoint 
+``` 
 POST /analyze 
+```
 
 ## Request Schema 
-The API accepts plain text input for both resume and job description 
+The API accepts plain text input for both resume (Extracts text content from a PDF resume for further analysis) and job description 
 
 ```json
 {
@@ -22,22 +28,44 @@ The API returns a structured analysis explaining resume-job description alignmen
 ```json 
 {
     "match_percentage": 72,
+    "required_match_percentage": 65,
+    "preferred_match_percentage": 80,
+    "domain_match_percentage": 70,
+
+    "matched_skills": ["Python", "SQL"],
     "missing_skills": ["Docker", "System Design"],
-    "weak_skills": ["Python"],
-    "rejection_summary": "The resume does not sufficiently match tha required skills for the role.",
+    "missing_preferred_skills": ["Kubernetes"],
+
+    "decision": "Borderline",
+
+    "impact_metrics": {
+        "hire_probability": "Medium",
+        "resume_strength": "Moderate",
+        "risk_level": "Medium"
+    },
+
+    "failure_analysis": {
+        "primary_reason": "Missing required skill: Docker",
+        "impact": "High impact on shortlisting",
+        "confidence": "High"
+    },
+
+    "rejection_summary": "The candidate lacks key required skills such as Docker and has only partial alignment with the job requirements. While some core skills are present, the absence of critical tools reduces overall competitiveness.",
+
     "improvement_suggestions": [
-        "Add hands-on experience with Docker",
-        "Include system design related projects"
+        "Gain hands-on experience with Docker",
+        "Add system design projects",
+        "Highlight relevant backend experience"
     ]
 }
 ```
 
-### Field Description 
-- match_percentage: Integer value (0-100) indicating skill overlap. 
-- missing_skills: Skills required by the job description but absent in the resume. 
-- weak_skills: Skills mentioned in the resume but with insufficient depth. 
-- rejection_summary: Human-readable explanation of rejection reasons. 
-- improvement_suggestions: Actionable steps to improve future applications.  
+## 📊 Key Capabilities
+
+- ✅ Weighted Scoring Model: Combines required, preferred, and domain skill alignment
+- ✅ Explainable AI Feedback: Generates human-readable rejection reasoning
+- ✅ Failure Analysis Engine: Identifies primary rejection cause and impact
+- ✅ Skill Gap Detection: Highlights missing and weak areas  
 
 ## Error Handling 
 
@@ -76,7 +104,7 @@ Example:
 }
 ```
 
-## Notes
-- This API is backend-only and does not handle file uploads.    
-- Skill extraction logic is deterministic; AI is used only for explanation generation. 
-- The response structure is guaranteed and stable.  
+## 🧠 Notes
+- The system uses deterministic skill extraction + AI explanation layer
+- Response structure is stable and production-ready
+- Designed for ATS systems, hiring platforms, and candidate feedback tools
