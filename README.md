@@ -1,95 +1,127 @@
-# SkillAlignAI
+# SkillAlignAI 🚀  
 
-Explainable ATS-style resume analysis system that evaluates candidate-job alignment using weighted skill matching and generates structured, actionable rejection feedback via a REST API. 
+An intelligent resume–job description alignment engine that evaluates candidate fit using **semantic skill matching, domain awareness, and explainable weighted scoring**.
 
-## Problem Statement 
+---
 
-Job applicants often receive rejection emails without any explanation of which skills caused the rejection. Recruiter feedback is usually unavailable or generic, making it difficult for candidates to understand gaps in their resumes and improve future applications. This project addresses the lack of structured, explainable feedback for resume-job description mismatches. 
+## 🎯 Problem
 
-## What This Project Does (System Output)
+Most hiring systems:
+- ❌ Provide no feedback after rejection  
+- ❌ Use naive keyword matching  
+- ❌ Fail to capture real skill relationships  
+- ❌ Do not explain *why* a candidate is rejected  
 
-- Accepts a resume and a job description as input  
-- Extracts relevant technical and role-specific skills from both inputs   
-- Computes a skill match percentage based on skill overlap  
-- Identifies missing and weak skills required by the job description  
-- Generates a structured, human-readable rejection explanation with actionable improvement suggestions    
+Result → Candidates cannot improve effectively.
 
-## What This Project Does Not DO 
+---
 
-- Does not rank candidates against other applicants   
-- Does not predict hiring or interview outcomes  
-- Does not auto-apply to jobs  
-- Does not replace recruiter or ATS decision-making  
-- Does not guarantee job selection or interviews  
+## 💡 Solution
 
-## System Architecture
+SkillAlignAI builds a **transparent ATS-style evaluation system** that:
 
-SkillAlignAI follows a modular pipeline:
+- Separates **skills**, **domain**, and **scoring logic**
+- Uses **semantic relationships (parent–child–sibling skills)**
+- Applies **confidence-based weighted scoring**
+- Generates **clear, structured rejection insights**
 
-1. **Resume Parser** – Extracts technical and role-specific skills from candidate resumes.
-2. **Job Description Analyzer** – Identifies required and preferred skills from job postings.
-3. **Skill Matching Engine** – Computes overlap, highlights missing/weak skills, and assigns severity levels.
-4. **Rejection Explanation Generator** – Produces structured, human-readable feedback using deterministic logic + AI-assisted phrasing.
-5. **Backend API Layer** – Exposes endpoints for resume/job analysis and integrates with a future frontend UI.
+---
 
-### Data Flow
+## ⚙️ Core Capabilities
+
+- Resume + Job Description analysis (text or PDF)
+- Semantic skill matching (not just keywords)
+- Multi-layer scoring:
+  - Required Match %
+  - Preferred Match %
+  - Domain Alignment %
+- Confidence-based scoring (direct, inferred, fuzzy)
+- Structured rejection analysis + suggestions
+
+---
+
+## 🧠 What Makes It Different
+
+Unlike basic ATS clones, this system:
+
+- ✅ Handles **skill hierarchies** (React → JavaScript)  
+- ✅ Supports **sibling inference** (TensorFlow ↔ PyTorch)  
+- ✅ Uses **confidence scoring** (1.0 / 0.5 / 0.3)  
+- ✅ Separates **domain vs skill matching**  
+- ✅ Prevents **false positives (Java ≠ JavaScript)**  
+- ✅ Handles **typos using fuzzy matching**
+
+---
+
+## 🧮 Scoring Logic
 ```text
-Frontend → REST API → Parsing → Skill Matching → Explanation → JSON Response → Frontend
+Base Score = 0.8 × Required Match + 0.2 × Preferred Match
+Final Score = Base × (0.7 + 0.3 × Domain Match)
 ```
 
-### Tech Stack
-- **Backend:** Python, Flask
-- **AI Integration:** Gemini API
-- **Frontend:** HTML, CSS, JavaScript (Fetch API)
-- **Testing:** Pytest
-- **Configuration:** python-dotenv
+### Interpretation:
+- **Required Match** → Core competency  
+- **Preferred Match** → Competitive advantage  
+- **Domain Match** → Contextual alignment  
 
-### Design Priorities
-- Deterministic skill matching for transparency
-- AI-assisted language generation for clarity
-- Modular components for scalability
+---
 
-## Overview 
+## ⚡ Example Evaluation
 
-SkillAlignAI is designed to explain why a job application may be rejected based on **resume–job description alignment**. Instead of providing generic feedback, it produces structured explanations highlighting missing skills, limited skill coverage, and improvement areas.  
+**Input:**
+``` text 
+Resume: html, css, ml
+JD: machine learning 
+```
 
-The system prioritizes explainability and determinism in skill matching while using AI-assisted language generation only for explanation clarity. 
+**Output:**
+- Required Match: 0%  
+- Domain Match: 100%  
+- Final Score: 0%  
 
-## Key Highlights 
+**Interpretation:**  
+Candidate shows interest in ML domain but lacks required technical skills.
 
-- Implemented weighted ATS-style scoring system (required vs preferred skills)
-- Added score breakdown (required match %, preferred match %, final score)
-- Built token-based skill extraction to eliminate false positives (e.g., Java vs JavaScript)
-- Designed explainable evaluation using structured rejection reports 
-- Integrated PDF resume parsing with automatic skill extraction
-- Developed REST API backend with AI-assisted explanation generation 
-- Deployed full-stack application (Render + static frontend)
+---
 
-## Features
+## 🏗️ System Architecture
 
-- Detects **missing required skills** and assigns severity levels.
-- Highlights **secondary factors** affecting application success.
-- Provides **clear, professional, and actionable advice** for candidates.
-- Generates explanations in **plain, understandable language**.
-- **Resume PDF Upload:** Upload a resume in PDF format and automatically extract text for analysis.
+### Pipeline
+```text
+Frontend → API → Parsing → Normalization → Matching → Scoring → Explanation → Response
+```
 
-## Why This Project Matters 
+### Modules
 
-Most job application systems provide little to no feedback after rejection. SkillAlignAI bridges this gap by:
+1. **Resume Parser** – Extracts skills, projects, and experience  
+2. **JD Analyzer** – Identifies required and preferred skills  
+3. **Normalization Layer** – Standardizes skill variations  
+4. **Semantic Matching Engine** – Handles parent-child & sibling relationships  
+5. **Scoring Engine** – Computes weighted alignment scores  
+6. **Domain Detection Engine** – Extracts contextual domain from raw text  
+7. **Explanation Generator** – Produces structured feedback  
 
-- Explaining why a candidate may be rejected 
-- Providing actionable improvement insights
-- Simulating how ATS systems evaluate resumes 
+---
 
-This makes the system useful not only as a tool, but also as a learning aid for job seekers.
+## 🛠️ Tech Stack
 
-## Folder Structure
+- **Backend:** Python, Flask  
+- **Frontend:** HTML, CSS, JavaScript  
+- **AI Integration:** Gemini API  
+- **Testing:** Pytest  
+- **Utilities:** python-dotenv  
+
+---
+
+## 📁 Project Structure
 
 ```text
 SkillAlignAI/
 │
 ├── backend/
 │   ├── .env
+│   ├── agent_controller.py
+│   ├── agents.py
 │   ├── app.py
 │   ├── contracts.py
 │   ├── fallback_explainer.py
@@ -97,10 +129,16 @@ SkillAlignAI/
 │   ├── jd_analyzer.py
 │   ├── rejection_engine.py
 │   ├── rejection_report.py
+│   ├── report_generator.py
 │   ├── resume_parser.py
 │   │
 │   ├── utils/
-│   │   └── pdf_parser.py        # Extracts text from uploaded PDF resumes
+│   │    ├── normalizer.py
+│   │    ├── pdf_parser.py
+│   │    ├── role_map.py
+│   │    ├── skill_categories.py
+│   │    ├── skill_map.py
+│   │    └── skill_weights.py      
 │   │
 │   └── tests/
 │       └── test_analyze_application.py
@@ -122,7 +160,9 @@ SkillAlignAI/
 └── requirements.txt
 ```
 
-## Installation
+---
+
+## 🚀 Installation
 
 ```bash
 git clone https://github.com/tanuluthra4/SkillAlignAI.git
@@ -132,27 +172,7 @@ pip install -r requirements.txt
 
 Create a .env file inside backend/ and configure required API keys.
 
-## How it Works
-
-1. Extract skills from resume and job description 
-2. Normalize and categorize skills (required vs preferred)
-3. Compute weighted match score 
-4. Generate structured rejection report 
-5. Produce human-readable explanation using AI 
-
-## Example Evaluation Output 
-
-The system provides transparent scoring: 
-
-- Required Match: 50%
-- Preferred Match: 0%
-- Final Score: 40% 
-
-This helps users understand not just the result, but *why* the result occurred.
-
-## Usage 
-
-### Running Locally 
+## ▶️ Usage 
 
 ```bash
 pip install -r requirements.txt
@@ -161,7 +181,7 @@ python -m backend.app
 
 Then open ```frontend/index.html``` in your browser 
 
-### API Endpoint 
+### 🔌 API Endpoint 
 
 POST/analyze
 
@@ -176,59 +196,48 @@ Request Body
 Example Response 
 ```json
 {
-  "match_percentage": 68,
-  "required_match_percentage": 75,
-  "preferred_match_percentage": 50,
-  "missing_skills": ["docker"],
-  "missing_preferred_skills": ["aws"],
-  "rejection_report": [
-    {
-      "reason": "Missing required skills",
-      "severity": "High",
-      "details": ["docker"]
-    }
-  ],
-  "rejection_summary": "..."
+  "match_score": 76,
+  "required_match": 70,
+  "preferred_match": "N/A",
+  "domain_match_percentage": "N/A",
+  "matched_skills": ["python"],
+  "missing_skills": [],
+  "score_explanation": {
+    "formula": "Base: 0.8 × required + 0.2 × preferred\nFinal: Base × (0.7 + 0.3 × domain)",
+    "final_score": 76
+  }
 }
 ```
 
-### Workflow
+---
 
-1. Upload or paste your resume text. 
-2. Provide the job description text.
-3. The backend analyzes both and returns:
-- Match Percentage - overall alignment score 
-- Missing Skills - critical gaps 
-- Weak Skills - areas needing improvement 
-- Explanation - human-readable feedback
-
-### Uploading a Resume PDF
-
-Instead of pasting resume text, you can upload a `.pdf` resume.
-
-The system will:
-1. Extract text from the pdf 
-2. Parse skills from the extracted content
-3. Compare them against the job description 
-4. Generate a match score and feedback
-
-## 🚀 Live Demo
+## 🌐 Live Demo
 
 Frontend: https://skillalignai-1.onrender.com  
 Backend API: https://skillalignai.onrender.com/analyze
 
-> Note: UI is intentionally minimal to focus on backend architecture, deterministic skill matching, and explainable feedback generation.
+---
 
-## Documentation 
+## 📈 Roadmap
 
-The docs/ folder contains system-level documentation and API specifications:
+- 🔥 Embedding-based semantic matching (next upgrade)
+- 📊 Multi-candidate comparison dashboard
+- 📄 Advanced resume parsing (structured sections)
+- 🤖 AI-generated interview insights
+- 🔐 Authentication & recruiter panel
 
-- api_contract.md: Defines request/response structure and API behavior
-- problem.md: problem definition and motivation 
-- solution.md: system approach and reasoning 
-- user_flow.md: end-to-end user interaction flow  
+---
 
-## Contribution
+## 🧠 Key Learnings
+
+- Importance of separating skills vs domain vs scoring
+- Handling ambiguity in NLP pipelines
+- Designing explainable AI systems
+- Preventing bias and score inflation
+
+---
+
+## 🤝 Contribution
 
 1. Fork the repository.
 2. Create a feature branch: 
@@ -245,10 +254,14 @@ git push origin feature-name
 ```
 5. Open a pull request 
 
-## Roadmap 
+---
 
-- Add skill ontology / synonym expansion 
-- Improve semantic skill extraction 
-- Add dashboard with match analytics 
-- Add authentication layer 
-- Enhance UI for better user experience 
+## 📌 Why This Project Matters 
+
+Most job application systems provide little to no feedback after rejection. SkillAlignAI bridges this gap by:
+
+- Explaining why a candidate may be rejected 
+- Providing actionable improvement insights
+- Simulating how ATS systems evaluate resumes 
+
+This makes the system useful not only as a tool, but also as a learning aid for job seekers.
