@@ -11,6 +11,55 @@ const BASE_URL =
 const fileInput = document.getElementById("resumeFile");
 const fileName = document.getElementById("fileName");
 
+const sampleResumeBtn = document.getElementById("sampleResumeBtn");
+const sampleJdBtn = document.getElementById("sampleJdBtn");
+
+const sampleResumeText = `
+Tanu Luthra
+B.Tech Computer Science Engineering Student
+
+Skills:
+Python, C++, MySQL, Flask, Git, GitHub, Data Structures, Algorithms, OOP, SQLite
+
+Projects:
+Built SkillAlignAI – Resume–JD Matching Engine using NLP and semantic skill matching.
+Developed JINI – AI-based desktop assistant using Python and Gemini API.
+Created Command-Line Job Scheduler using C++ with recurring task execution.
+
+Experience:
+AWS APAC Solutions Architecture Job Simulation (Forage)
+
+Education:
+B.Tech CSE – J.C. Bose University of Science and Technology, YMCA
+CGPA: 8.89
+`;
+
+const sampleJdText = `
+Software Engineering Intern (Backend)
+
+Requirements:
+Strong knowledge of Python and object-oriented programming
+Understanding of REST APIs and backend development
+Experience with databases like MySQL or SQLite
+Knowledge of Git/GitHub and debugging skills
+Good understanding of Data Structures and Algorithms
+
+Preferred:
+Experience with Flask, automation tools, and problem-solving mindset
+`;
+
+if (sampleResumeBtn) {
+    sampleResumeBtn.addEventListener("click", function () {
+        document.getElementById("resume").value = sampleResumeText;
+    });
+}
+
+if (sampleJdBtn) {
+    sampleJdBtn.addEventListener("click", function () {
+        document.getElementById("job").value = sampleJdText;
+    });
+}
+
 if (fileInput && fileName) {
     fileInput.addEventListener("change", function () {
         fileName.textContent = this.files[0]
