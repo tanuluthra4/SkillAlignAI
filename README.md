@@ -138,23 +138,30 @@ SkillAlignAI/
 │   │    ├── role_map.py
 │   │    ├── skill_categories.py
 │   │    ├── skill_map.py
-│   │    └── skill_weights.py      
+│   │    └── skill_weights.py
 │   │
 │   └── tests/
 │       └── test_analyze_application.py
 │
 ├── frontend/
-│   ├── index.html              
-│   ├── script.js               
-│   └── style.css               
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
+├── assets/
+│   └── screenshots/
+│       ├── hero-section.png
+│       ├── analysis-dashboard.png
+│       ├── export-results.png
+│       └── candidate-comparison.png
 │
 ├── docs/
-│   ├── api_contract.md         # API request/response specification
-│   ├── problem.md              # Problem definition
-│   ├── user_flow.md            # User interaction flow
-│   └── solution.md             # System design explanation
+│   ├── api_contract.md
+│   ├── problem.md
+│   ├── user_flow.md
+│   └── solution.md
 │
-├── Procfile                    # Render deployment configuration
+├── Procfile
 ├── README.md
 ├── .gitignore
 └── requirements.txt
