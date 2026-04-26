@@ -144,9 +144,9 @@ SkillAlignAI/
 │       └── test_analyze_application.py
 │
 ├── frontend/
-│   ├── index.html              # User interface
-│   ├── script.js               # API calls + UI logic
-│   └── style.css               # Basic styling
+│   ├── index.html              
+│   ├── script.js               
+│   └── style.css               
 │
 ├── docs/
 │   ├── api_contract.md         # API request/response specification
@@ -218,9 +218,42 @@ Backend API: https://skillalignai.onrender.com/analyze
 
 ---
 
+## 📸 Project Screenshots
+
+### 1. Hero Section + Input Workflow
+
+![Hero Section](assets/screenshots/hero-section.png)
+
+### 2. AI Analysis Dashboard
+
+![Analysis Dashboard](assets/screenshots/analysis-dashboard.png)
+
+### 3. Export Results
+
+![Results](assets/screenshots/results.png)
+
+### 4. Candidate Comparison Engine
+
+![Candidate Comparison](assets/screenshots/candidate-comparison.png)
+
+---
+
+## 🎯 Business Impact
+
+SkillAlignAI improves hiring transparency by:
+
+- Reducing false negatives caused by poor keyword matching
+- Helping recruiters compare candidates faster
+- Giving candidates actionable rejection feedback
+- Supporting explainable and fairer hiring decisions
+
+This shifts hiring from blind rejection to structured decision-making.
+
+---
+
 ## 📈 Roadmap
 
-- 🔥 Embedding-based semantic matching (next upgrade)
+- 🔥 Advanced embedding optimization for deeper semantic ranking
 - 📊 Multi-candidate comparison dashboard
 - 📄 Advanced resume parsing (structured sections)
 - 🤖 AI-generated interview insights
