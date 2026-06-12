@@ -46,3 +46,43 @@ Output Format:
         return None
     
     return response.text
+
+def rewrite_resume_bullet(bullet_text, target_role=None):
+    prompt = f"""
+You are an expert resume writer.
+
+Rewrite the resume bullet to be:
+
+- ATS friendly
+- Achievement focused
+- Professional
+- Strong action verbs
+- Concise
+
+IMPORTANT:
+- Never invent numbers, percentages, users, revenue, metrics, scale, or results.
+- Only use information explicitly present in the original bullet.
+- If metrics are missing, improve wording without fabricating them.
+
+Target Role:
+{target_role}
+
+Original Bullet:
+{bullet_text}
+
+Return only the improved bullet.
+"""
+
+    response = model.generate_content(prompt)
+
+    if not response or not getattr(response, "text", None):
+        return bullet_text
+
+    return response.text.strip()
+
+print(
+    rewrite_resume_bullet(
+        "Built a Flask website for students",
+        "Backend Developer"
+    )
+)

@@ -342,6 +342,43 @@ document.getElementById("clearCandidates").onclick = function () {
     document.getElementById("comparisonTable").innerHTML = "";
 }
 
+document
+.getElementById("rewriteBtn")
+.addEventListener("click", async () => {
+
+    const bullet =
+        document.getElementById("bulletInput").value;
+
+    const targetRole =
+        document.getElementById("targetRole").value;
+
+    const response = await fetch(
+        `${BASE_URL}/rewrite_bullet`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                bullet,
+                target_role: targetRole
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById(
+        "rewriteResult"
+    ).innerHTML = `
+        <p><strong>Original:</strong></p>
+        <p>${data.original}</p>
+
+        <p><strong>Rewritten:</strong></p>
+        <p>${data.rewritten}</p>
+    `;
+});
+
 function renderTags(containerId, items) {
     const el = document.getElementById(containerId);
     if (!el) return;
