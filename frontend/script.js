@@ -1,4 +1,5 @@
 const analyzeBtn = document.getElementById("analyzeBtn");
+const optimizeBtn = document.getElementById("optimizeResumeBtn");
 const downloadBtn = document.getElementById("downloadReport");
 let allCandidates = [];
 
@@ -162,6 +163,25 @@ analyzeBtn.addEventListener("click", async function () {
         return;
     }
 
+});
+
+optimizeBtn.addEventListener("click", async function () {
+    const resumeText = document.getElementById("resume").value;
+    const jobText = document.getElementById("job").value;
+
+    const response = await fetch(`${BASE_URL}/optimize_resume`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resume_text: resumeText, job_description_text: jobText })
+    });
+
+    const data = await response.json();
+
+    localStorage.setItem("currentResume", resumeText);
+    localStorage.setItem("enhancedResume", data.optimized_resume);
+    localStorage.setItem("bulletChanges", JSON.stringify(data.bullet_changes));
+
+    window.location.href = "enhance.html";
 });
 
 downloadBtn.onclick = function (e) {
@@ -343,41 +363,41 @@ document.getElementById("clearCandidates").onclick = function () {
 }
 
 document
-.getElementById("rewriteBtn")
-.addEventListener("click", async () => {
+    .getElementById("rewriteBtn")
+    .addEventListener("click", async () => {
 
-    const bullet =
-        document.getElementById("bulletInput").value;
+        const bullet =
+            document.getElementById("bulletInput").value;
 
-    const targetRole =
-        document.getElementById("targetRole").value;
+        const targetRole =
+            document.getElementById("targetRole").value;
 
-    const response = await fetch(
-        `${BASE_URL}/rewrite_bullet`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                bullet,
-                target_role: targetRole
-            })
-        }
-    );
+        const response = await fetch(
+            `${BASE_URL}/rewrite_bullet`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    bullet,
+                    target_role: targetRole
+                })
+            }
+        );
 
-    const data = await response.json();
+        const data = await response.json();
 
-    document.getElementById(
-        "rewriteResult"
-    ).innerHTML = `
+        document.getElementById(
+            "rewriteResult"
+        ).innerHTML = `
         <p><strong>Original:</strong></p>
         <p>${data.original}</p>
 
         <p><strong>Rewritten:</strong></p>
         <p>${data.rewritten}</p>
     `;
-});
+    });
 
 function renderTags(containerId, items) {
     const el = document.getElementById(containerId);

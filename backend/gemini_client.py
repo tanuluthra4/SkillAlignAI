@@ -1,3 +1,5 @@
+from urllib import response
+
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -86,3 +88,35 @@ print(
         "Backend Developer"
     )
 )
+
+def optimize_resume(
+    resume_text,
+    job_description_text,
+    missing_skills
+):
+    prompt = f"""
+You are an expert ATS resume optimizer.
+
+Resume:
+{resume_text}
+
+Job Description:
+{job_description_text}
+
+Missing Skills:
+{missing_skills}
+
+Tasks:
+
+1. Improve resume bullets.
+2. Naturally incorporate missing skills if realistic.
+3. Use ATS-friendly language.
+4. Add measurable impact where possible.
+5. Keep information truthful.
+6. Do NOT invent jobs, projects or achievements.
+
+Return ONLY the optimized resume text.
+"""
+    response = model.generate_content(prompt)
+
+    return response.text.strip() if response and getattr(response, "text", None) else resume_text

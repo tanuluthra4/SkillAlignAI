@@ -490,3 +490,28 @@ tr:hover {
     font-size: 14px;
     line-height: 1.6;
 }
+
+.resume-comparison {
+    display: flex;
+    gap: 20px;
+}
+
+.resume-panel {
+    flex: 1;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    overflow-y: auto;
+}
+
+.change-log {
+    margin-top: 20px;
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.change-log h4 {
+    color: #60a5fa;
+    margin-bottom: 10px;
+}

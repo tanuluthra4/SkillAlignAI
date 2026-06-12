@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from backend.utils.pdf_parser import extract_text_from_pdf
 from backend.agent_controller import run_pipeline
-from backend.gemini_client import rewrite_resume_bullet
+from backend.gemini_client import rewrite_resume_bullet, optimize_resume
 
 app = Flask(__name__)
 CORS(app)
@@ -78,6 +78,41 @@ def rewrite_bullet():
         return jsonify({
             "original": bullet,
             "rewritten": rewritten
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+    
+@app.route("/optimize_resume", methods=["POST"])
+def optimize_resume_route():
+    data = request.get_json(force=True)
+
+    resume_text = data.get("resume_text", "")
+    job_description_text = data.get("job_description_text", "")
+    missing_skills = data.get("missing_skills", [])
+
+    try:
+        analysis = run_pipeline(
+                resume_text,
+                job_description_text
+            )
+        
+        missing_skills = analysis.get(
+            "missing_skills",
+            []
+        )
+        
+        optimized_resume = optimize_resume(
+            resume_text,
+            job_description_text,
+            missing_skills
+        )
+
+        return jsonify({
+            "optimized_resume": optimized_resume,
+            "missing_skills": missing_skills
         }), 200
 
     except Exception as e:
