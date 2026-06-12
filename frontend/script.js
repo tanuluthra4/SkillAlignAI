@@ -437,6 +437,7 @@ function displayResult(data) {
     const suggestions = document.getElementById("suggestions");
     const reportList = document.getElementById("reportList");
     const failureAnalysisDiv = document.getElementById("failureAnalysis");
+    const enhancementBox = document.getElementById("resumeEnhancements");
     const impactBox = document.getElementById("impactMetrics");
     const explanation = document.getElementById("explanation");
     const auditTrail = document.getElementById("auditTrail");
@@ -552,6 +553,14 @@ function displayResult(data) {
                 <p><strong>Action:</strong><br>${fa.fix_action}</p>
             </div>
         `;
+    }
+
+    if (enhancementBox) {
+        enhancementBox.innerHTML =
+            (data.resume_enhancement_suggestions || [])
+                .map(item => `<li>${item}</li>`)
+                .join("")
+            || "<li>No enhancement suggestions available</li>";
     }
 
     if (impactBox) {

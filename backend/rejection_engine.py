@@ -320,6 +320,10 @@ def generate_rejection_data(score_data):
         for skill in missing_preferred_skills
     ]
 
+    resume_enhancement_suggestions = (
+        generate_resume_enhancement_suggestions(score_data)
+    )
+
     failure_analysis = generate_failure_analysis(score_data)
     impact_metrics = generate_impact_metrics(score_data)
 
@@ -327,9 +331,48 @@ def generate_rejection_data(score_data):
         "rejection_report": rejection_report,
         "rejection_summary": rejection_summary,
         "improvement_suggestions": improvement_suggestions,
+        "resume_enhancement_suggestions": resume_enhancement_suggestions,
         "failure_analysis": failure_analysis,
         "impact_metrics": impact_metrics
     }
+
+def generate_resume_enhancement_suggestions(score_data):
+    missing_skills = score_data.get("missing_skills", [])
+    missing_preferred = score_data.get("missing_preferred_skills", [])
+    score = score_data.get("match_score", 0)
+
+    suggestions = []
+
+    for skill in missing_skills:
+        suggestions.append(
+            f"Add a project demonstrating {skill} and describe measurable outcomes."
+        )
+
+    for skill in missing_preferred:
+        suggestions.append(
+            f"Mention exposure to {skill} through coursework, projects, or certifications."
+        )
+
+    if score < 50:
+        suggestions.append(
+            "Rewrite project descriptions using action verbs and quantified achievements."
+        )
+
+        suggestions.append(
+            "Add a dedicated Technical Skills section near the top of the resume."
+        )
+
+    elif score < 75:
+        suggestions.append(
+            "Strengthen project descriptions by highlighting impact, technologies, and results."
+        )
+
+    else:
+        suggestions.append(
+            "Resume is well aligned. Focus on improving achievement-focused bullet points."
+        )
+
+    return suggestions
 
 def generate_failure_analysis(score_data):
     missing_required = score_data.get("missing_skills", [])

@@ -96,6 +96,7 @@ def run_pipeline(resume_text, jd_text):
             "rejection_summary": explanation_data.get("summary", ""),
             "rejection_report": explanation_data.get("rejection_report", []),
             "improvement_suggestions": explanation_data.get("improvement_suggestions", []),
+            "resume_enhancement_suggestions": explanation_data.get("resume_enhancement_suggestions", []),
             "failure_analysis": explanation_data.get("failure_analysis", {}),
             "impact_metrics": explanation_data.get("impact_metrics", {}),
 
