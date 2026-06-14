@@ -79,6 +79,16 @@ textarea {
     margin-top: 10px;
 }
 
+#error-message {
+    color: #dc2626;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: none;
+}
+
 .result-container {
     max-width: 1200px;
     margin: 20px auto;

@@ -69,7 +69,15 @@ if (fileInput && fileName) {
     });
 }
 
+const errorBox = document.getElementById("error-message");
+
+errorBox.style.display = "none";
+
 analyzeBtn.addEventListener("click", async function () {
+
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
     const resumeFile = document.getElementById("resumeFile").files[0];
@@ -83,13 +91,6 @@ analyzeBtn.addEventListener("click", async function () {
     if (auditTrailEl) {
         auditTrailEl.innerHTML = "";
     }
-
-    setTimeout(() => {
-        document.getElementById("result").scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }, 100);
 
     document.getElementById("result").style.opacity = "0.2";
     document.getElementById("loaderOverlay").classList.remove("hidden");
@@ -105,6 +106,20 @@ analyzeBtn.addEventListener("click", async function () {
             });
 
             const uploadData = await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+                errorBox.textContent = uploadData.error;
+                errorBox.style.display = "block";
+
+                document.getElementById("loaderOverlay")
+                    .classList.add("hidden");
+
+                document.getElementById("result")
+                    .style.opacity = "1";
+
+                return;
+            }
+
             resumeText = uploadData.resume_text;
         }
 
@@ -120,6 +135,34 @@ analyzeBtn.addEventListener("click", async function () {
         });
 
         const data = await response.json();
+
+        if (!response.ok) {
+            errorBox.textContent = data.error;
+            errorBox.style.display = "block";
+
+            document.getElementById("loaderOverlay")
+                .classList.add("hidden");
+
+            document.getElementById("result")
+                .style.opacity = "1";
+
+            return;
+        }
+
+        document.getElementById("loaderOverlay")
+            .classList.add("hidden");
+
+        document.getElementById("result")
+            .style.opacity = "1";
+
+        displayResult(data);
+
+        document.getElementById("result")
+            .scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
         console.log("FULL RESPONSE:", data);
         if (!response.ok) {
             document.getElementById("loaderOverlay").classList.add("hidden");
@@ -181,6 +224,19 @@ optimizeBtn.addEventListener("click", async function () {
     });
 
     const data = await response.json();
+
+    if (!response.ok) {
+        errorBox.textContent = data.error;
+        errorBox.style.display = "block";
+
+        document.getElementById("loaderOverlay")
+            .classList.add("hidden");
+
+        document.getElementById("result")
+            .style.opacity = "1";
+
+        return;
+    }
 
     console.log("Optimize Response:", data);
 
@@ -397,6 +453,16 @@ document
         );
 
         const data = await response.json();
+
+        if (!response.ok) {
+            errorBox.textContent =
+                data.error;
+
+            errorBox.style.display =
+                "block";
+
+            return;
+        }
 
         document.getElementById(
             "rewriteResult"
