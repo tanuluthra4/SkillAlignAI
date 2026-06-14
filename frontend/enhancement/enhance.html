@@ -9,20 +9,87 @@
 </head>
 
 <body>
-    <div class="resume-comparison">
-        <div class="resume-panel">
-            <h2>Current Resume</h2>
+    <div class="enhancement-hero">
+
+        <h1>🚀 Resume Optimization Complete</h1>
+
+        <p>
+             ATS-focused improvements generated from the target job description
+        </p>
+
+    </div>
+    <div class="summary-cards">
+
+        <div class="summary-card">
+            <span class="icon">📈</span>
+            <h4>Optimization Score</h4>
+            <span id="optimizationScore">0%</span>
+        </div>
+
+        <div class="summary-card">
+            <span class="icon">🎯</span>
+            <h4>Skills Added</h4>
+            <span id="skillsAdded">0</span>
+        </div>
+
+        <div class="summary-card">
+            <span class="icon">✍️</span>
+            <h4>Bullets Improved</h4>
+            <span id="bulletsImproved">0</span>
+        </div>
+
+        <div class="summary-card">
+            <span class="icon">✅</span>
+            <h4>ATS Optimized</h4>
+            <span>Ready</span>
+        </div>
+
+    </div>
+
+    <div class="optimization-summary">
+
+        <h2>🔍 Optimization Summary</h2>
+
+        <ul id="optimizationSummary"></ul>
+
+    </div>
+
+    <div class="actions">
+
+        <button id="copyResumeBtn">
+            📋 Copy Resume
+        </button>
+
+        <button id="downloadResumeBtn">
+            📄 Download Optimized Resume
+        </button>
+
+        <button onclick="history.back()">
+            ← Back
+        </button>
+
+    </div>
+
+    <div class="resume-grid">
+
+        <div class="resume-card">
+            <h2>📄 Current Resume</h2>
             <div id="currentResume"></div>
         </div>
-        <div class="resume-panel">
-            <h2>Enhanced Resume</h2>
-            <div id="enhancedResume"></div>
+
+        <div class="resume-card">
+            <h2>✨ Enhanced Resume</h2>
+            <div id="enhancedResume" class="resume-viewer"></div>
         </div>
+
     </div>
 
     <div class="change-log">
-        <h3>Bullet‑by‑Bullet Changes</h3>
-        <ul id="bulletChanges"></ul>
+
+        <h3>✍️ Bullet-by-Bullet Improvements</h3>
+
+        <div id="bulletChanges"></div>
+
     </div>
 
 
