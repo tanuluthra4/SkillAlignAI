@@ -7,7 +7,7 @@ const BASE_URL =
     window.location.hostname === "127.0.0.1" ||
         window.location.hostname === "localhost"
         ? "http://127.0.0.1:5000"
-        : "https://skillalignai.onrender.com";
+        : "https://skillalignai-1.onrender.com";
 
 const fileInput = document.getElementById("resumeFile");
 const fileName = document.getElementById("fileName");
@@ -74,88 +74,108 @@ const errorBox = document.getElementById("error-message");
 errorBox.style.display = "none";
 
 analyzeBtn.addEventListener("click", async function () {
-
     errorBox.style.display = "none";
     errorBox.textContent = "";
 
     let resumeText = document.getElementById("resume").value;
     const jobText = document.getElementById("job").value;
-    const resumeFile = document.getElementById("resumeFile").files[0];
-    const reportList = document.getElementById("reportList")
+    const resumeFile =
+        document.getElementById("resumeFile").files[0];
+
+    const reportList =
+        document.getElementById("reportList");
 
     if (reportList) {
         reportList.innerHTML = "";
     }
+
     document.getElementById("explanation").textContent = "";
-    const auditTrailEl = document.getElementById("auditTrail");
-    if (auditTrailEl) {
-        auditTrailEl.innerHTML = "";
+
+    const auditTrail =
+        document.getElementById("auditTrail");
+
+    if (auditTrail) {
+        auditTrail.innerHTML = "";
     }
 
     document.getElementById("result").style.opacity = "0.2";
-    document.getElementById("loaderOverlay").classList.remove("hidden");
+    document.getElementById("loaderOverlay")
+        .classList.remove("hidden");
 
     try {
+        // Upload PDF if selected
         if (resumeFile) {
             const formData = new FormData();
-            formData.append("resume_file", resumeFile);
+            formData.append(
+                "resume_file",
+                resumeFile
+            );
 
-            const uploadResponse = await fetch(`${BASE_URL}/upload_resume`, {
-                method: "POST",
-                body: formData
-            });
+            const uploadResponse =
+                await fetch(
+                    `${BASE_URL}/upload_resume`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
 
-            const uploadData = await uploadResponse.json();
+            const uploadData =
+                await uploadResponse.json();
 
             if (!uploadResponse.ok) {
-                errorBox.textContent = uploadData.error;
-                errorBox.style.display = "block";
-
-                document.getElementById("loaderOverlay")
-                    .classList.add("hidden");
-
-                document.getElementById("result")
-                    .style.opacity = "1";
-
-                return;
+                throw new Error(
+                    uploadData.error ||
+                    "Failed to upload resume."
+                );
             }
 
-            resumeText = uploadData.resume_text;
+            resumeText =
+                uploadData.resume_text;
         }
 
-        const response = await fetch(`${BASE_URL}/analyze`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                resume_text: resumeText,
-                job_description_text: jobText
-            })
-        });
+        // Analyze Resume
+        const response = await fetch(
+            `${BASE_URL}/analyze`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    resume_text: resumeText,
+                    job_description_text: jobText
+                })
+            }
+        );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         if (!response.ok) {
-            errorBox.textContent = data.error;
-            errorBox.style.display = "block";
-
-            document.getElementById("loaderOverlay")
-                .classList.add("hidden");
-
-            document.getElementById("result")
-                .style.opacity = "1";
-
-            return;
+            throw new Error(
+                data.error ||
+                "Analysis failed."
+            );
         }
 
-        document.getElementById("loaderOverlay")
-            .classList.add("hidden");
-
-        document.getElementById("result")
-            .style.opacity = "1";
+        // Success
+        window.latestData = data;
 
         displayResult(data);
+
+        allCandidates.push({
+            name:
+                `Candidate ${allCandidates.length + 1}`,
+            score:
+                data.match_percentage,
+            decision:
+                data.decision,
+            missing:
+                data.missing_skills,
+            data: data
+        });
 
         document.getElementById("result")
             .scrollIntoView({
@@ -163,49 +183,21 @@ analyzeBtn.addEventListener("click", async function () {
                 block: "start"
             });
 
-        console.log("FULL RESPONSE:", data);
-        if (!response.ok) {
-            document.getElementById("loaderOverlay").classList.add("hidden");
-            document.getElementById("result").style.opacity = "1";
-
-            const auditTrail = document.getElementById("auditTrail");
-
-            if (auditTrail) {
-                auditTrail.innerHTML = "";
-
-                (data.audit_trail || []).forEach(step => {
-                    const li = document.createElement("li");
-                    li.textContent = step;
-                    auditTrail.appendChild(li);
-                });
-            }
-            return;
-        }
-
-        document.getElementById("loaderOverlay").classList.add("hidden");
-        document.getElementById("result").style.opacity = "1";
-        displayResult(data);
-
-        window.latestData = data;
-
-        // store candidate 
-        allCandidates.push({
-            name: `Candidate ${allCandidates.length + 1}`,
-            score: data.match_percentage,
-            decision: data.decision,
-            missing: data.missing_skills,
-            data: data
-        });
-
     } catch (error) {
-        document.getElementById("loaderOverlay").classList.add("hidden");
-        document.getElementById("result").style.opacity = "1";
+        console.error(error);
 
-        console.error(error)
+        errorBox.textContent =
+            error.message;
 
-        return;
+        errorBox.style.display =
+            "block";
+    } finally {
+        document.getElementById("loaderOverlay")
+            .classList.add("hidden");
+
+        document.getElementById("result")
+            .style.opacity = "1";
     }
-
 });
 
 optimizeBtn.addEventListener("click", async function () {
