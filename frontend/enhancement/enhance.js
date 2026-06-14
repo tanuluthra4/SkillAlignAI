@@ -133,40 +133,40 @@ window.addEventListener("DOMContentLoaded", () => {
 <li>Enhanced technical terminology</li>
 `;
 
-  const bulletChanges =
+  const bulletChangesContainer =
     document.getElementById("bulletChanges");
 
-  bulletChanges.innerHTML = "";
+  bulletChangesContainer.innerHTML = "";
 
   changes.forEach((change, index) => {
 
-    bulletChanges.innerHTML += `
-<div class="change-card">
+    bulletChangesContainer.innerHTML += `
+  <div class="change-card">
 
-    <div class="change-header">
-        Improvement #${index + 1}
-    </div>
+      <div class="change-header">
+          Improvement #${index + 1}
+      </div>
 
-    <div class="comparison">
+      <div class="comparison">
 
-        <div class="before">
-            <h4>❌ Before</h4>
-            <p>${change.original}</p>
-        </div>
+          <div class="before">
+              <h4>❌ Before</h4>
+              <p>${change.original}</p>
+          </div>
 
-        <div class="after">
-            <h4>✅ After</h4>
-            <p>${change.rewritten}</p>
-        </div>
+          <div class="after">
+              <h4>✅ After</h4>
+              <p>${change.rewritten}</p>
+          </div>
 
-    </div>
+      </div>
 
-    <div class="reason">
-        <h4>💡 Why This Helps ATS</h4>
-        <p>${change.reason}</p>
-    </div>
+      <div class="reason">
+          <h4>💡 Why This Helps ATS</h4>
+          <p>${change.reason}</p>
+      </div>
 
-</div>
+  </div>
 `;
   });
 });
