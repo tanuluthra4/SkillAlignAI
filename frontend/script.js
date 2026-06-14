@@ -7,7 +7,7 @@ const BASE_URL =
     window.location.hostname === "127.0.0.1" ||
         window.location.hostname === "localhost"
         ? "http://127.0.0.1:5000"
-        : "https://skillalignai-1.onrender.com";
+        : "https://skillalignai.onrender.com";
 
 const fileInput = document.getElementById("resumeFile");
 const fileName = document.getElementById("fileName");
@@ -150,8 +150,18 @@ analyzeBtn.addEventListener("click", async function () {
             }
         );
 
-        const data =
-            await response.json();
+        const text = await response.text();
+
+        let data = {};
+
+        try {
+            data = JSON.parse(text);
+        }
+        catch {
+            throw new Error(
+                `Server returned invalid response (${response.status})`
+            );
+        }
 
         if (!response.ok) {
             throw new Error(
@@ -215,7 +225,18 @@ optimizeBtn.addEventListener("click", async function () {
         })
     });
 
-    const data = await response.json();
+    const text = await response.text();
+
+    let data = {};
+
+    try {
+        data = JSON.parse(text);
+    }
+    catch {
+        throw new Error(
+            `Server returned invalid response (${response.status})`
+        );
+    }
 
     if (!response.ok) {
         errorBox.textContent = data.error;
@@ -444,7 +465,18 @@ document
             }
         );
 
-        const data = await response.json();
+        const text = await response.text();
+
+        let data = {};
+
+        try {
+            data = JSON.parse(text);
+        }
+        catch {
+            throw new Error(
+                `Server returned invalid response (${response.status})`
+            );
+        }
 
         if (!response.ok) {
             errorBox.textContent =
