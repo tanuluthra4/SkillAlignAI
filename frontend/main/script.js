@@ -171,17 +171,27 @@ optimizeBtn.addEventListener("click", async function () {
 
     const response = await fetch(`${BASE_URL}/optimize_resume`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume_text: resumeText, job_description_text: jobText })
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            resume_text: resumeText,
+            job_description_text: jobText
+        })
     });
 
     const data = await response.json();
 
-    localStorage.setItem("currentResume", resumeText);
-    localStorage.setItem("enhancedResume", data.optimized_resume);
-    localStorage.setItem("bulletChanges", JSON.stringify(data.bullet_changes));
+    console.log("Optimize Response:", data);
 
-    window.location.href = "enhance.html";
+    localStorage.setItem("currentResume", resumeText);
+    localStorage.setItem("enhancedResume", data.optimized_resume || "");
+    localStorage.setItem(
+        "bulletChanges",
+        JSON.stringify(data.bullet_changes || [])
+    );
+
+    window.location.href = "../enhancement/enhance.html";
 });
 
 downloadBtn.onclick = function (e) {

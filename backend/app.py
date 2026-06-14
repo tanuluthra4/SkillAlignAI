@@ -91,20 +91,12 @@ def optimize_resume_route():
 
     resume_text = data.get("resume_text", "")
     job_description_text = data.get("job_description_text", "")
-    missing_skills = data.get("missing_skills", [])
 
     try:
-        analysis = run_pipeline(
-                resume_text,
-                job_description_text
-            )
-        
-        missing_skills = analysis.get(
-            "missing_skills",
-            []
-        )
-        
-        optimized_resume = optimize_resume(
+        analysis = run_pipeline(resume_text, job_description_text)
+        missing_skills = analysis.get("missing_skills", [])
+
+        optimized_resume, bullet_changes = optimize_resume(
             resume_text,
             job_description_text,
             missing_skills
@@ -112,13 +104,12 @@ def optimize_resume_route():
 
         return jsonify({
             "optimized_resume": optimized_resume,
-            "missing_skills": missing_skills
+            "missing_skills": missing_skills,
+            "bullet_changes": bullet_changes or []
         }), 200
 
     except Exception as e:
-        return jsonify({
-            "error": str(e)
-        }), 500
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

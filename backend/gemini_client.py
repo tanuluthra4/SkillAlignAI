@@ -1,5 +1,6 @@
 from urllib import response
 
+from flask import json
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -89,34 +90,59 @@ print(
     )
 )
 
-def optimize_resume(
-    resume_text,
-    job_description_text,
-    missing_skills
-):
+def optimize_resume(resume_text, job_description_text, missing_skills):
     prompt = f"""
-You are an expert ATS resume optimizer.
+    You are an expert ATS resume optimizer.
 
-Resume:
-{resume_text}
+    Resume:
+    {resume_text}
 
-Job Description:
-{job_description_text}
+    Job Description:
+    {job_description_text}
 
-Missing Skills:
-{missing_skills}
+    Missing Skills:
+    {missing_skills}
 
-Tasks:
+    Tasks:
+    1. Improve resume bullets.
+    2. Naturally incorporate missing skills if realistic.
+    3. Use ATS-friendly language.
+    4. Add measurable impact where possible.
+    5. Keep information truthful.
+    6. Do NOT invent jobs, projects or achievements.
 
-1. Improve resume bullets.
-2. Naturally incorporate missing skills if realistic.
-3. Use ATS-friendly language.
-4. Add measurable impact where possible.
-5. Keep information truthful.
-6. Do NOT invent jobs, projects or achievements.
+    Return ONLY valid JSON.
 
-Return ONLY the optimized resume text.
-"""
+    Do not use markdown.
+    Do not use ```json.
+    Do not add explanations.
+
+    Schema:
+
+    {{
+    "optimized_resume": "...",
+    "bullet_changes": [
+        {{
+        "original": "...",
+        "rewritten": "...",
+        "reason": "..."
+        }}
+    ]
+    }}
+    """
+
     response = model.generate_content(prompt)
 
-    return response.text.strip() if response and getattr(response, "text", None) else resume_text
+    if response and getattr(response, "text", None):
+        try:
+            result = json.loads(response.text)
+            optimized_resume = result.get("optimized_resume", resume_text)
+            bullet_changes = result.get("bullet_changes", [])
+        except Exception:
+            optimized_resume = response.text.strip()
+            bullet_changes = []
+    else:
+        optimized_resume = resume_text
+        bullet_changes = []
+
+    return optimized_resume, bullet_changes
