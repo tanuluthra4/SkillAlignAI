@@ -580,6 +580,19 @@ tr:hover {
     white-space:pre-wrap;
 }
 
+.resume-viewer{
+    white-space:pre-wrap;
+    line-height:1.8;
+}
+
+#currentResume,
+#enhancedResume {
+    white-space: pre-wrap;
+    line-height: 1.8;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
 .comparison{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -669,4 +682,21 @@ mark{
     color:black;
     padding:2px 6px;
     border-radius:4px;
+}
+
+.skill-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin:10px 0 20px;
+}
+
+.skill-tag{
+    background:rgba(37,99,235,.15);
+    border:1px solid rgba(96,165,250,.25);
+    color:#dbeafe;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:500;
 }

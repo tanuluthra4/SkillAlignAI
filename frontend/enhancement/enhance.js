@@ -40,18 +40,60 @@ document
     URL.revokeObjectURL(url);
   });
 
+function formatResume(text) {
+
+  if (!text) return "No resume found.";
+
+  return text
+    .replace("Skills:", "<h3>🛠 Skills</h3>")
+    .replace("Projects:", "<h3>🚀 Projects</h3>")
+    .replace("Experience:", "<h3>💼 Experience</h3>")
+    .replace("Education:", "<h3>🎓 Education</h3>");
+}
+
+function renderSkillsAsTags(resumeText) {
+
+  const skillsMatch =
+    resumeText.match(/Skills:\s*([\s\S]*?)(Projects:|Experience:|Education:|$)/i);
+
+  if (!skillsMatch) {
+    return resumeText;
+  }
+
+  const skillsText = skillsMatch[1];
+
+  const skills = skillsText
+    .split(",")
+    .map(skill => skill.trim())
+    .filter(Boolean);
+
+  const skillsHtml = `
+        <h3>🛠 Skills</h3>
+        <div class="skill-tags">
+            ${skills.map(skill =>
+    `<span class="skill-tag">${skill}</span>`
+  ).join("")}
+        </div>
+    `;
+
+  return resumeText.replace(
+    skillsMatch[0],
+    skillsHtml
+  );
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   const currentResume = localStorage.getItem("currentResume");
   const enhancedResume = localStorage.getItem("enhancedResume");
   const bulletChangesRaw = localStorage.getItem("bulletChanges");
 
   // Current Resume
-  document.getElementById("currentResume").textContent =
-    currentResume || "No resume found.";
+  document.getElementById("currentResume").innerHTML =
+    formatResume(currentResume);
 
-  // Enhanced Resume (only text, not JSON)
-  document.getElementById("enhancedResume").textContent =
-    enhancedResume || "No enhanced resume found.";
+  // Enhanced Resume
+  document.getElementById("enhancedResume").innerHTML =
+    renderSkillsAsTags(enhancedResume);
 
   const changes =
     JSON.parse(
