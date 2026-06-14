@@ -1,6 +1,11 @@
 const analyzeBtn = document.getElementById("analyzeBtn");
 const optimizeBtn = document.getElementById("optimizeResumeBtn");
 const downloadBtn = document.getElementById("downloadReport");
+const ERROR_PAGE =
+    window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+        ? "/frontend/error/error.html"
+        : "/error/error.html";
 let allCandidates = [];
 
 const BASE_URL =
@@ -196,12 +201,15 @@ analyzeBtn.addEventListener("click", async function () {
     } catch (error) {
         console.error(error);
 
-        errorBox.textContent =
-            error.message;
+        localStorage.setItem(
+            "errorMessage",
+            error.message
+        );
 
-        errorBox.style.display =
-            "block";
-    } finally {
+        window.location.href =
+            ERROR_PAGE;
+    }
+    finally {
         document.getElementById("loaderOverlay")
             .classList.add("hidden");
 
@@ -239,8 +247,14 @@ optimizeBtn.addEventListener("click", async function () {
     }
 
     if (!response.ok) {
-        errorBox.textContent = data.error;
-        errorBox.style.display = "block";
+
+        localStorage.setItem(
+            "errorMessage",
+            data.error || "Unknown error"
+        );
+
+        window.location.href =
+            ERROR_PAGE;
 
         document.getElementById("loaderOverlay")
             .classList.add("hidden");
@@ -479,11 +493,14 @@ document
         }
 
         if (!response.ok) {
-            errorBox.textContent =
-                data.error;
 
-            errorBox.style.display =
-                "block";
+            localStorage.setItem(
+                "errorMessage",
+                data.error || "Unknown error"
+            );
+
+            window.location.href =
+                ERROR_PAGE;
 
             return;
         }
