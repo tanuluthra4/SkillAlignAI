@@ -155,6 +155,7 @@ Final Score = Base × (0.7 + 0.3 × Domain Match)
 
 ### Score Components
 |**Components**|**Purpose**|
+|---|---|
 |Required Match|Core competency measurement|
 |Preferred Match|Competitive Advantage|
 |Domain Match|Contextual alignment|
