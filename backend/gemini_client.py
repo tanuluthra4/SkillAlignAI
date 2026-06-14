@@ -83,13 +83,6 @@ Return only the improved bullet.
 
     return response.text.strip()
 
-print(
-    rewrite_resume_bullet(
-        "Built a Flask website for students",
-        "Backend Developer"
-    )
-)
-
 def optimize_resume(resume_text, job_description_text, missing_skills):
     prompt = f"""
     You are an expert ATS resume optimizer.
