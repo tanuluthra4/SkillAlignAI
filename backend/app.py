@@ -1,3 +1,4 @@
+from fastapi import logger
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from backend.utils.pdf_parser import extract_text_from_pdf
@@ -81,9 +82,12 @@ def rewrite_bullet():
         }), 200
 
     except Exception as e:
+        logger.exception(e)
+
         return jsonify({
-            "error": str(e)
-        }), 500
+            "success": False,
+            "message": "Internal server error"
+        }),500
     
 @app.route("/optimize_resume", methods=["POST"])
 def optimize_resume_route():
@@ -109,7 +113,12 @@ def optimize_resume_route():
         }), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.exception(e)
+    
+        return jsonify({
+            "success": False,
+            "message": "Internal server error"
+        }),500
 
 if __name__ == "__main__":
     app.run(debug=True)
