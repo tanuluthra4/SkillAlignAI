@@ -1,10 +1,10 @@
-from fastapi import logger
 import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from backend.utils.pdf_parser import extract_text_from_pdf
 from backend.agent_controller import run_pipeline
 from backend.gemini_client import rewrite_resume_bullet, optimize_resume
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
@@ -40,6 +40,24 @@ def analyze():
 
     resume_text = resume_text or ""
     job_description_text = job_description_text or ""
+    
+    if not resume_text.strip():
+        logger.warning(
+            "Empty resume submitted."
+        )
+
+        return jsonify({
+            "error": "Resume text is required."
+        }), 400
+
+    if not job_description_text.strip():
+        logger.warning(
+            "Empty job description submitted."
+        )
+
+        return jsonify({
+            "error": "Job description is required."
+        }), 400
 
     result = run_pipeline(resume_text, job_description_text)
     logger.info(
@@ -73,9 +91,14 @@ def upload_resume():
         }), 400
     
     try:
-        logger.info(
-            f"Resume uploaded: {file.filename}"
+        filename = secure_filename(
+            file.filename
         )
+
+        logger.info(
+            f"Resume uploaded: {filename}"
+        )
+        
         resume_text = extract_text_from_pdf(file)
 
         return jsonify({
@@ -133,6 +156,16 @@ def optimize_resume_route():
     resume_text = data.get("resume_text", "")
     job_description_text = data.get("job_description_text", "")
 
+    if not resume_text.strip():
+        return jsonify({
+            "error": "Resume text is required."
+        }), 400
+
+    if not job_description_text.strip():
+        return jsonify({
+            "error": "Job description is required."
+        }), 400
+
     try:
         analysis = run_pipeline(resume_text, job_description_text)
         missing_skills = analysis.get("missing_skills", [])
@@ -163,4 +196,6 @@ def optimize_resume_route():
         }), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        debug=os.getenv("FLASK_DEBUG", "False") == "True"
+    )
