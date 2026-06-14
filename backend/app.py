@@ -18,6 +18,18 @@ logger = logging.getLogger(__name__)
 CORS(app)
 logger.info("SkillAlignAI server started.")
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+app.config["SECRET_KEY"] = SECRET_KEY
+app.config["MAX_CONTENT_LENGTH"] = int(
+    os.getenv("MAX_CONTENT_LENGTH", 5242880)
+)
+
 @app.route("/analyze", methods=["POST"])
 def analyze():
     logger.info("/analyze endpoint called")
