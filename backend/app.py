@@ -1,4 +1,5 @@
 from fastapi import logger
+import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from backend.utils.pdf_parser import extract_text_from_pdf
@@ -6,10 +7,20 @@ from backend.agent_controller import run_pipeline
 from backend.gemini_client import rewrite_resume_bullet, optimize_resume
 
 app = Flask(__name__)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
 CORS(app)
+logger.info("SkillAlignAI server started.")
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
+    logger.info("/analyze endpoint called")
  
     data = request.get_json(force=True)
     resume_text = data.get("resume_text")
@@ -19,6 +30,9 @@ def analyze():
     job_description_text = job_description_text or ""
 
     result = run_pipeline(resume_text, job_description_text)
+    logger.info(
+        f"Analysis completed. Match score: {result.get('match_percentage')}%"
+    )
 
     if result.get("decision") == "Failed":
         return jsonify(result), 400
@@ -27,6 +41,7 @@ def analyze():
     
 @app.route("/upload_resume", methods=["POST"])
 def upload_resume():
+    logger.info("/upload_resume endpoint called")
 
     if "resume_file" not in request.files:
         return jsonify({
@@ -46,6 +61,9 @@ def upload_resume():
         }), 400
     
     try:
+        logger.info(
+            f"Resume uploaded: {file.filename}"
+        )
         resume_text = extract_text_from_pdf(file)
 
         return jsonify({
@@ -53,12 +71,17 @@ def upload_resume():
         }), 200
     
     except Exception:
+        logger.exception(
+            "Error occurred in /upload_resume"
+        )
+
         return jsonify({
-            "error": "failed to process PDF"
+            "error": "Failed to process PDF file"
         }), 500
     
 @app.route("/rewrite_bullet", methods=["POST"])
 def rewrite_bullet():
+    logger.info("/rewrite_bullet endpoint called")
 
     data = request.get_json(force=True)
 
@@ -81,16 +104,18 @@ def rewrite_bullet():
             "rewritten": rewritten
         }), 200
 
-    except Exception as e:
-        logger.exception(e)
+    except Exception:
+        logger.exception(
+            "Error occurred in /rewrite_bullet"
+        )
 
         return jsonify({
-            "success": False,
-            "message": "Internal server error"
-        }),500
+            "error": "Internal Server Error"
+        }), 500
     
 @app.route("/optimize_resume", methods=["POST"])
 def optimize_resume_route():
+    logger.info("/optimize_resume endpoint called")
     data = request.get_json(force=True)
 
     resume_text = data.get("resume_text", "")
@@ -106,19 +131,24 @@ def optimize_resume_route():
             missing_skills
         )
 
+        logger.info(
+            "Resume optimization completed successfully."
+        )
+
         return jsonify({
             "optimized_resume": optimized_resume,
             "missing_skills": missing_skills,
             "bullet_changes": bullet_changes or []
         }), 200
 
-    except Exception as e:
-        logger.exception(e)
-    
+    except Exception:
+        logger.exception(
+            "Error occurred in /optimize_resume"
+        )
+
         return jsonify({
-            "success": False,
-            "message": "Internal server error"
-        }),500
+            "error": "Internal Server Error"
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
