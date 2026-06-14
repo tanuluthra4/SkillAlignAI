@@ -1,55 +1,149 @@
 # SkillAlignAI 🚀  
 
-An intelligent resume–job description alignment engine that evaluates candidate fit using **semantic skill matching, domain awareness, and explainable weighted scoring**.
+> AI-Powered Resume & Job Description Alignment Engine   
+
+SkillAlignAI is an intelligent ATS-style evaluation platform that analyzes resumes against job descriptions using semantic skill matching, weighted scoring, domain awareness, and explainable AI feedback.
+
+It helps recruiters evaluate candidates more transparently and helps job seekers understand exactly why they may or may not be a strong fit for a role.
+
+---
+
+## 🌐 Live Demo
+
+Frontend: https://skillalignai-1.onrender.com  
+Backend API: https://skillalignai.onrender.com/analyze
+
+---
+
+## ✨ Feature Highlights
+
+### Resume Analysis
+
+- Resume vs Job Description matching
+- PDF and text resume support
+- Semantic skill matching
+- Domain-aware evaluation
+- ATS-style weighted scoring
+
+### Explainable AI
+
+- Detailed rejection analysis
+- Primary rejection reasons
+- Improvement suggestions
+- Confidence-based evaluation
+
+### Resume Optimization
+
+- ATS keyword enhancement
+- Resume rewriting assistance
+- Bullet-by-bullet improvements
+- Resume enhancement dashboard
+
+### Candidate Comparison
+- Multi-candidate ranking
+- Risk-aware comparison
+- Missing-skill analysis
+- Recruiter-friendly decision support
+
+### Export & Reporting
+- PDF report export
+- JSON report export
+- Audit trail generation
+- Explainable scoring breakdown
+
+### User Experience
+
+- Interactive dashboard
+- Error handling page
+- Modern dark UI
+- Responsive design
 
 ---
 
 ## 🎯 Problem
 
-Most hiring systems:
-- ❌ Provide no feedback after rejection  
-- ❌ Use naive keyword matching  
-- ❌ Fail to capture real skill relationships  
-- ❌ Do not explain *why* a candidate is rejected  
+Most ATS systems suffer from several limitations:
+- No meaningful rejection feedback
+- Heavy reliance on keyword matching
+- Poor understanding of related skills
+- Lack of transparency in scoring decisions
 
-Result → Candidates cannot improve effectively.
+As a result, candidates are often rejected without understanding why, making improvement difficult.
 
 ---
 
 ## 💡 Solution
 
-SkillAlignAI builds a **transparent ATS-style evaluation system** that:
+SkillAlignAI introduces a transparent ATS-style evaluation workflow that:
 
-- Separates **skills**, **domain**, and **scoring logic**
-- Uses **semantic relationships (parent–child–sibling skills)**
-- Applies **confidence-based weighted scoring**
-- Generates **clear, structured rejection insights**
-
----
-
-## ⚙️ Core Capabilities
-
-- Resume + Job Description analysis (text or PDF)
-- Semantic skill matching (not just keywords)
-- Multi-layer scoring:
-  - Required Match %
-  - Preferred Match %
-  - Domain Alignment %
-- Confidence-based scoring (direct, inferred, fuzzy)
-- Structured rejection analysis + suggestions
+- Separates skill matching from domain matching
+- Uses semantic relationships between technologies
+- Applies weighted scoring logic
+- Generates explainable rejection insights
+- Provides resume improvement recommendations
 
 ---
 
 ## 🧠 What Makes It Different
 
-Unlike basic ATS clones, this system:
+Unlike traditional ATS clones, SkillAlignAI supports:
 
-- ✅ Handles **skill hierarchies** (React → JavaScript)  
-- ✅ Supports **sibling inference** (TensorFlow ↔ PyTorch)  
-- ✅ Uses **confidence scoring** (1.0 / 0.5 / 0.3)  
-- ✅ Separates **domain vs skill matching**  
-- ✅ Prevents **false positives (Java ≠ JavaScript)**  
-- ✅ Handles **typos using fuzzy matching**
+### Semantic Skill Matching
+
+Examples:
+
+```text
+React → JavaScript
+Flask → Python
+TensorFlow ↔ PyTorch
+```
+
+The system understands relationships instead of relying solely on exact keyword matches.
+
+### Confidence-Based Scoring
+
+Each match receives a confidence level:
+
+```text
+Direct Match      = 1.0
+Inferred Match    = 0.5
+Fuzzy Match       = 0.3
+```
+
+### False Positive Prevention
+
+The engine avoids incorrect matches such as:
+
+```text
+Java ≠ JavaScript
+C ≠ C++
+SQL ≠ NoSQL
+```
+
+### Domain Awareness
+
+Example:
+
+```text
+Resume: HTML, CSS, ML
+JD: Machine Learning Engineer
+```
+
+The candidate may show domain interest but still lack required technical skills.
+
+---
+
+## ⚙️ Core Capabilities
+
+- Resume Upload (PDF/Text)
+- Resume Parsing
+- Job Description Analysis
+- Semantic Skill Matching
+- Domain Detection
+- Explainable ATS Scoring
+- Resume Optimization
+- Candidate Comparison
+- Export Reports
 
 ---
 
@@ -59,10 +153,40 @@ Base Score = 0.8 × Required Match + 0.2 × Preferred Match
 Final Score = Base × (0.7 + 0.3 × Domain Match)
 ```
 
-### Interpretation:
-- **Required Match** → Core competency  
-- **Preferred Match** → Competitive advantage  
-- **Domain Match** → Contextual alignment  
+### Score Components
+|**Components**|**Purpose**|
+|Required Match|Core competency measurement|
+|Preferred Match|Competitive Advantage|
+|Domain Match|Contextual alignment|
+|Final Score|Overall candidate fit| 
+
+---
+
+## 🚧 Engineering Challenges Solved
+
+### Skill Hierarchy Matching
+```text
+React → JavaScript
+Node.js → JavaScript
+```
+
+### Sibling Skill Detection
+```text
+TensorFlow ↔ PyTorch
+MongoDB ↔ PostgreSQL
+```
+
+### Fuzzy Matching
+```text
+Pyhton → Python
+Javascrpt → JavaScript
+```
+
+### False Positive Prevention
+```text
+Java ≠ JavaScript
+C ≠ C++
+```
 
 ---
 
@@ -86,30 +210,76 @@ Candidate shows interest in ML domain but lacks required technical skills.
 
 ## 🏗️ System Architecture
 
-### Pipeline
+### High-Level Workflow
 ```text
-Frontend → API → Parsing → Normalization → Matching → Scoring → Explanation → Response
+Frontend → Resume Parser → JD Analyzer → Normalization → Semantic Matching Engine → Scoring Engine → Explanation Generator → Interactive Dashboard
 ```
 
-### Modules
+### Core Modules
 
-1. **Resume Parser** – Extracts skills, projects, and experience  
-2. **JD Analyzer** – Identifies required and preferred skills  
-3. **Normalization Layer** – Standardizes skill variations  
-4. **Semantic Matching Engine** – Handles parent-child & sibling relationships  
-5. **Scoring Engine** – Computes weighted alignment scores  
-6. **Domain Detection Engine** – Extracts contextual domain from raw text  
-7. **Explanation Generator** – Produces structured feedback  
+#### Resume Parser
+
+Extracts:
+
+- Skills
+- Projects
+- Experience
+- Education
+
+#### JD Analyzer
+
+Identifies:
+
+- Required Skills
+- Preferred Skills
+- Role Context
+
+#### Semantic Matching Engine
+
+Handles:
+
+- Direct matches
+- Parent-child relationships
+- Sibling skills
+- Fuzzy matches
+
+#### Scoring Engine
+
+Calculates:
+
+- Required Match %
+- Preferred Match %
+- Domain Match %
+- Final ATS Score
+
+#### Explanation Generator
+
+Produces:
+
+- Rejection insights
+- Improvement recommendations
+- Hiring rationale  
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python, Flask  
-- **Frontend:** HTML, CSS, JavaScript  
-- **AI Integration:** Gemini API  
-- **Testing:** Pytest  
-- **Utilities:** python-dotenv  
+### Backend
+- Python
+- Flask
+- Gemini API
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Testing
+- Pytest
+
+### Utilities
+- python-dotenv
+- PDF Parsing Utilities 
 
 ---
 
@@ -146,13 +316,20 @@ SkillAlignAI/
 ├── frontend/
 │   ├── index.html
 │   ├── script.js
-│   └── style.css
+│   ├──  style.css
+|   |
+│   ├── enhancement/
+│   │    ├── enhance.html
+│   │    └── enhance.js
+│   │
+│   └── error/
+│       └── error.html
 │
 ├── assets/
 │   └── screenshots/
 │       ├── hero-section.png
 │       ├── analysis-dashboard.png
-│       ├── export-results.png
+│       ├── results.png
 │       └── candidate-comparison.png
 │
 ├── docs/
@@ -179,7 +356,7 @@ pip install -r requirements.txt
 
 Create a .env file inside backend/ and configure required API keys.
 
-## ▶️ Usage 
+## ▶️ Run Locally
 
 ```bash
 pip install -r requirements.txt
@@ -218,13 +395,6 @@ Example Response
 
 ---
 
-## 🌐 Live Demo
-
-Frontend: https://skillalignai-1.onrender.com  
-Backend API: https://skillalignai.onrender.com/analyze
-
----
-
 ## 📸 Project Screenshots
 
 ### 1. Hero Section + Input Workflow
@@ -244,6 +414,30 @@ Backend API: https://skillalignai.onrender.com/analyze
 ![Candidate Comparison](assets/screenshots/candidate-comparison.png)
 
 ---
+
+## 💼 Use Cases
+
+### Recruiters
+
+- Faster candidate screening
+- Transparent hiring decisions
+- Candidate comparison
+
+### Students
+
+- ATS preparation
+- Resume improvement
+- Skill-gap identification
+
+### Career Coaches
+
+- Resume enhancement guidance
+- ATS optimization support
+
+### Hiring Teams
+
+- Structured candidate evaluation
+- Explainable ranking system
 
 ## 🎯 Business Impact
 
@@ -265,15 +459,6 @@ This shifts hiring from blind rejection to structured decision-making.
 - 📄 Advanced resume parsing (structured sections)
 - 🤖 AI-generated interview insights
 - 🔐 Authentication & recruiter panel
-
----
-
-## 🧠 Key Learnings
-
-- Importance of separating skills vs domain vs scoring
-- Handling ambiguity in NLP pipelines
-- Designing explainable AI systems
-- Preventing bias and score inflation
 
 ---
 
@@ -303,5 +488,6 @@ Most job application systems provide little to no feedback after rejection. Skil
 - Explaining why a candidate may be rejected 
 - Providing actionable improvement insights
 - Simulating how ATS systems evaluate resumes 
+- Helping Candidates improve strategically
 
-This makes the system useful not only as a tool, but also as a learning aid for job seekers.
+The result is a more explainable, fair, and educational hiring experience.
