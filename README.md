@@ -398,21 +398,42 @@ Example Response
 
 ## 📸 Project Screenshots
 
-### 1. Hero Section + Input Workflow
+### 🖥️ Analysis Dashboard
 
-![Hero Section](assets/screenshots/hero-section.png)
+The main SkillAlignAI interface where users can:
 
-### 2. AI Analysis Dashboard
+- Upload or paste resumes (text/PDF)
+- Enter job descriptions
+- Run semantic ATS analysis
+- View scoring metrics, skill gaps, and recommendations
+- Access resume optimization and candidate comparison tools
 
-![Analysis Dashboard](assets/screenshots/analysis-dashboard.png)
+![Analysis Dashboard](assets\screenshots\Analysis-dashboard.jpeg)
 
-### 3. Export Results
+### ✨ Resume Optimization Engine
 
-![Results](assets/screenshots/results.png)
+Generates ATS-friendly resume improvements by:
 
-### 4. Candidate Comparison Engine
+- Adding missing technical keywords
+- Strengthening project descriptions
+- Improving action verbs
+- Aligning resume content with job requirements
+- Explaining every enhancement made
 
-![Candidate Comparison](assets/screenshots/candidate-comparison.png)
+![Resume Optimization](assets\screenshots\Resume-optimization.jpeg)
+
+### ⚠️ Error Handling System
+
+Displays dedicated error pages whenever invalid inputs or processing failures occur, ensuring a smoother user experience instead of silent failures.
+
+Examples:
+
+- Missing resume
+- Missing job description
+- Invalid requests
+- API processing failures
+
+![Error Handling](assets\screenshots\Error-handling.png)
 
 ---
 
