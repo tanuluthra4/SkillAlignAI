@@ -82,8 +82,8 @@ analyzeBtn.addEventListener("click", async function () {
     errorBox.style.display = "none";
     errorBox.textContent = "";
 
-    let resumeText = document.getElementById("resume").value;
-    const jobText = document.getElementById("job").value;
+    let resumeText = document.getElementById("resume").value.trim();
+    const jobText = document.getElementById("job").value.trim();
     const resumeFile =
         document.getElementById("resumeFile").files[0];
 
@@ -137,6 +137,10 @@ analyzeBtn.addEventListener("click", async function () {
 
             resumeText =
                 uploadData.resume_text;
+
+            document.getElementById(
+                "resume"
+            ).value = resumeText;
         }
 
         // Analyze Resume
@@ -216,65 +220,167 @@ analyzeBtn.addEventListener("click", async function () {
         document.getElementById("result")
             .style.opacity = "1";
     }
+
+    localStorage.setItem(
+        "currentResume",
+        resumeText
+    );
 });
 
 optimizeBtn.addEventListener("click", async function () {
-    const resumeText = document.getElementById("resume").value;
-    const jobText = document.getElementById("job").value;
-
-    const response = await fetch(`${BASE_URL}/optimize_resume`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            resume_text: resumeText,
-            job_description_text: jobText
-        })
-    });
-
-    const text = await response.text();
-
-    let data = {};
 
     try {
-        data = JSON.parse(text);
-    }
-    catch {
-        throw new Error(
-            `Server returned invalid response (${response.status})`
+
+        let resumeText =
+            document.getElementById("resume")
+            .value.trim();
+
+        const resumeFile =
+            document.getElementById(
+                "resumeFile"
+            ).files[0];
+
+        // Upload PDF if textarea is empty
+        if (!resumeText && resumeFile) {
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "resume_file",
+                resumeFile
+            );
+
+            const uploadResponse =
+                await fetch(
+                    `${BASE_URL}/upload_resume`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+            const uploadData =
+                await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+
+                throw new Error(
+                    uploadData.error ||
+                    "Failed to upload PDF"
+                );
+            }
+
+            resumeText =
+                uploadData.resume_text;
+
+            document.getElementById(
+                "resume"
+            ).value = resumeText;
+        }
+
+        if (!resumeText) {
+
+            localStorage.setItem(
+                "errorMessage",
+                "Please upload a PDF or paste a resume first."
+            );
+
+            window.location.href =
+                ERROR_PAGE;
+
+            return;
+        }
+
+        const jobText =
+            document.getElementById("job")
+            .value.trim();
+
+        if (!jobText) {
+
+            localStorage.setItem(
+                "errorMessage",
+                "Please paste a job description."
+            );
+
+            window.location.href =
+                ERROR_PAGE;
+
+            return;
+        }
+
+        const response =
+            await fetch(
+                `${BASE_URL}/optimize_resume`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        resume_text: resumeText,
+                        job_description_text: jobText
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            localStorage.setItem(
+                "errorMessage",
+                data.error || "Unknown error"
+            );
+
+            window.location.href =
+                ERROR_PAGE;
+
+            return;
+        }
+
+        localStorage.setItem(
+            "currentResume",
+            resumeText
         );
+
+        localStorage.setItem(
+            "enhancedResume",
+            data.optimized_resume || ""
+        );
+
+        localStorage.setItem(
+            "bulletChanges",
+
+            JSON.stringify(
+                data.bullet_changes || []
+            )
+        );
+
+        window.location.href =
+            "../frontend/enhancement/enhance.html";
+
     }
 
-    if (!response.ok) {
+    catch (error) {
+
+        console.error(error);
 
         localStorage.setItem(
             "errorMessage",
-            data.error || "Unknown error"
+
+            error.message ||
+            "Something went wrong"
         );
 
         window.location.href =
             ERROR_PAGE;
-
-        document.getElementById("loaderOverlay")
-            .classList.add("hidden");
-
-        document.getElementById("result")
-            .style.opacity = "1";
-
-        return;
     }
 
-    console.log("Optimize Response:", data);
-
-    localStorage.setItem("currentResume", resumeText);
-    localStorage.setItem("enhancedResume", data.optimized_resume || "");
-    localStorage.setItem(
-        "bulletChanges",
-        JSON.stringify(data.bullet_changes || [])
-    );
-
-    window.location.href = "../enhancement/enhance.html";
 });
 
 downloadBtn.onclick = function (e) {
