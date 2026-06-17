@@ -408,7 +408,7 @@ The main SkillAlignAI interface where users can:
 - View scoring metrics, skill gaps, and recommendations
 - Access resume optimization and candidate comparison tools
 
-![Analysis Dashboard](assets\screenshots\Analysis-dashboard.jpeg)
+![Analysis Dashboard](assets/screenshots/Analysis-dashboard.jpeg)
 
 ### ✨ Resume Optimization Engine
 
@@ -420,7 +420,7 @@ Generates ATS-friendly resume improvements by:
 - Aligning resume content with job requirements
 - Explaining every enhancement made
 
-![Resume Optimization](assets\screenshots\Resume-optimization.jpeg)
+![Resume Optimization](assets/screenshots/Resume-optimization.jpeg)
 
 ### ⚠️ Error Handling System
 
@@ -433,7 +433,7 @@ Examples:
 - Invalid requests
 - API processing failures
 
-![Error Handling](assets\screenshots\Error-handling.png)
+![Error Handling](assets/screenshots/Error-handling.png)
 
 ---
 
