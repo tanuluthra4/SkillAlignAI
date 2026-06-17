@@ -362,7 +362,7 @@ optimizeBtn.addEventListener("click", async function () {
         );
 
         window.location.href =
-            "../frontend/enhancement/enhance.html";
+            "../enhancement/enhance.html";
 
     }
 
